@@ -1,0 +1,199 @@
+# RLM Task to GitHub Issue Workflow
+#
+# This workflow automatically creates GitHub issues from RLM task files.
+# Issues can then be manually assigned to GitHub Copilot for autonomous implementation.
+#
+# Triggers:
+# - When task files are pushed to RLM/tasks/active/
+# - Manual trigger via workflow_dispatch
+#
+# To use Copilot coding agent after issue creation:
+# 1. Open the created issue on GitHub
+# 2. Click "Assign to Copilot" in the sidebar
+# 3. Copilot will autonomously implement and create a PR
+
+name: RLM Task to GitHub Issue
+
+on:
+  push:
+    paths:
+      - 'RLM/tasks/active/TASK-*.md'
+  workflow_dispatch:
+    inputs:
+      task_id:
+        description: 'Specific task ID to convert (e.g., TASK-001). Leave empty to process all new tasks.'
+        required: false
+        type: string
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get task files to process
+        id: get-files
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.task_id }}" ]; then
+            # Manual trigger with specific task
+            echo "files=RLM/tasks/active/${{ github.event.inputs.task_id }}.md" >> $GITHUB_OUTPUT
+            echo "Processing specific task: ${{ github.event.inputs.task_id }}"
+          else
+            # Push trigger - get changed files
+            changed=$(git diff --name-only HEAD~1 HEAD -- 'RLM/tasks/active/TASK-*.md' 2>/dev/null | tr '\n' ' ' || echo "")
+            if [ -z "$changed" ]; then
+              echo "No task files changed"
+              echo "files=" >> $GITHUB_OUTPUT
+            else
+              echo "files=$changed" >> $GITHUB_OUTPUT
+              echo "Processing changed files: $changed"
+            fi
+          fi
+
+      - name: Create GitHub Issues from Task Files
+        if: steps.get-files.outputs.files != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const files = '${{ steps.get-files.outputs.files }}'.trim().split(' ').filter(f => f);
+            console.log(`Processing ${files.length} task file(s)`);
+
+            for (const file of files) {
+              if (!fs.existsSync(file)) {
+                console.log(`File not found: ${file}, skipping`);
+                continue;
+              }
+
+              const content = fs.readFileSync(file, 'utf8');
+              console.log(`Processing: ${file}`);
+
+              // Parse task file using regex
+              const titleMatch = content.match(/^# Task: (.+)$/m);
+              const taskIdMatch = content.match(/^## Task ID: (TASK-\d+)$/m);
+              const featureMatch = content.match(/^## Feature: (FTR-\d+)$/m);
+              const typeMatch = content.match(/^## Type: (.+)$/m);
+              const priorityMatch = content.match(/^## Priority: (.+)$/m);
+              const effortMatch = content.match(/^## Estimated Effort: (.+)$/m);
+
+              // Extract sections
+              const descMatch = content.match(/## Description\n([\s\S]*?)(?=\n## |$)/);
+              const acMatch = content.match(/## Acceptance Criteria\n([\s\S]*?)(?=\n## |$)/);
+              const testMatch = content.match(/## Test Requirements\n([\s\S]*?)(?=\n## |$)/);
+              const filesMatch = content.match(/## Files to Modify\/Create\n([\s\S]*?)(?=\n## |$)/);
+
+              // Extract values with defaults
+              const title = titleMatch ? titleMatch[1].trim() : 'Untitled Task';
+              const taskId = taskIdMatch ? taskIdMatch[1].trim() : path.basename(file, '.md');
+              const feature = featureMatch ? featureMatch[1].trim() : 'N/A';
+              const type = typeMatch ? typeMatch[1].trim().toLowerCase() : 'implementation';
+              const priority = priorityMatch ? priorityMatch[1].trim().toLowerCase() : 'medium';
+              const effort = effortMatch ? effortMatch[1].trim() : 'TBD';
+              const description = descMatch ? descMatch[1].trim() : 'No description provided.';
+              const acceptanceCriteria = acMatch ? acMatch[1].trim() : 'See task file.';
+              const testRequirements = testMatch ? testMatch[1].trim() : '';
+              const filesToModify = filesMatch ? filesMatch[1].trim() : '';
+
+              // Build issue body
+              const body = `## ${taskId}: ${title}
+
+| Field | Value |
+|-------|-------|
+| **Feature** | ${feature} |
+| **Type** | ${type} |
+| **Priority** | ${priority} |
+| **Estimated Effort** | ${effort} |
+
+## Description
+${description}
+
+## Acceptance Criteria
+${acceptanceCriteria}
+
+${testRequirements ? `## Test Requirements\n${testRequirements}\n` : ''}
+${filesToModify ? `## Files to Modify/Create\n${filesToModify}\n` : ''}
+
+---
+
+<details>
+<summary>How to use GitHub Copilot with this issue</summary>
+
+1. Click **"Assign to Copilot"** in the sidebar (requires Copilot coding agent enabled)
+2. Copilot will autonomously implement the task and create a Pull Request
+3. Review the PR, request changes if needed, and merge when ready
+
+</details>
+
+---
+*Auto-generated from \`${file}\`*
+*RLM Task Management System*`;
+
+              // Build labels array
+              const labels = ['rlm-task'];
+
+              // Add type label
+              const validTypes = ['architecture', 'implementation', 'testing', 'deployment', 'documentation'];
+              if (validTypes.includes(type)) {
+                labels.push(`type:${type}`);
+              }
+
+              // Add priority label
+              if (priority === 'high' || priority === 'critical') {
+                labels.push('priority:high');
+              } else if (priority === 'low') {
+                labels.push('priority:low');
+              }
+
+              // Check if issue already exists
+              const { data: existingIssues } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'all',
+                labels: 'rlm-task',
+                per_page: 100
+              });
+
+              const issueTitle = `[${taskId}] ${title}`;
+              const exists = existingIssues.some(issue =>
+                issue.title.includes(taskId) || issue.title === issueTitle
+              );
+
+              if (exists) {
+                console.log(`Issue for ${taskId} already exists, skipping`);
+                continue;
+              }
+
+              // Create the issue
+              try {
+                const { data: newIssue } = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: issueTitle,
+                  body: body,
+                  labels: labels
+                });
+
+                console.log(`Created issue #${newIssue.number} for ${taskId}: ${newIssue.html_url}`);
+              } catch (error) {
+                console.error(`Failed to create issue for ${taskId}: ${error.message}`);
+              }
+            }
+
+      - name: Summary
+        run: |
+          echo "## RLM Task to Issue Workflow Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Processed task files and created GitHub issues." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Review created issues" >> $GITHUB_STEP_SUMMARY
+          echo "2. Assign issues to Copilot for autonomous implementation" >> $GITHUB_STEP_SUMMARY
+          echo "3. Review and merge resulting PRs" >> $GITHUB_STEP_SUMMARY

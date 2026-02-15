@@ -1,0 +1,20 @@
+{
+  "pipeline_id": "PIPELINE-2026-02-14-001",
+  "started_at": "2026-02-14T00:00:00Z",
+  "automation_level": "AUTO",
+  "current_phase": 1,
+  "design_required": null,
+  "phases": {
+    "1_discovery": { "status": "completed" },
+    "2_design": { "status": "skipped" },
+    "3_specs": { "status": "completed" },
+    "4_feature_design": { "status": "skipped" },
+    "5_tasks": { "status": "completed" },
+    "6_implementation": { "status": "pending" },
+    "7_quality": { "status": "pending" },
+    "8_verification": { "status": "pending" },
+    "9_report": { "status": "pending" }
+  },
+  "token_usage": 0,
+  "last_checkpoint": null
+}

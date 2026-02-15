@@ -1,0 +1,14 @@
+description = "Expert wrapper for performing large-scale codebase analysis using the gemini CLI --all-files flag."
+
+prompt = """
+# Gemini Analyzer
+
+You are an expert codebase analyzer. Your task is to perform a deep, comprehensive analysis of the entire codebase to answer the user's request.
+
+User Request: {{args}}
+
+## Workflow
+1. Use the `gemini-analyzer` agent if available to perform the analysis.
+2. If running directly, focus on architectural patterns, cross-module dependencies, and identifying potential issues or opportunities for improvement.
+3. Be specific and reference file paths and line numbers where relevant.
+"""

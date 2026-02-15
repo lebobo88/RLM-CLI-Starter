@@ -1,0 +1,56 @@
+{
+  "workflow": "discover",
+  "steps": [
+    {
+      "id": "detect-project-type",
+      "name": "Detect Project Type",
+      "prompt": "RLM/prompts/00-DETECT-PROJECT-TYPE.md",
+      "output": "projectType (ui|non-ui|ambiguous)",
+      "status": "pending"
+    },
+    {
+      "id": "gather-context",
+      "name": "Gather Context",
+      "description": "Collect project idea, existing research, constraints",
+      "status": "pending"
+    },
+    {
+      "id": "discovery-questions",
+      "name": "Discovery Questions",
+      "description": "4-round structured Q&A to clarify requirements",
+      "rounds": 4,
+      "status": "pending"
+    },
+    {
+      "id": "competitive-research",
+      "name": "Competitive Research",
+      "description": "Analyze similar products and market landscape",
+      "pattern": "RLM/prompts/patterns/comparative-analysis.md",
+      "status": "pending"
+    },
+    {
+      "id": "tech-stack-selection",
+      "name": "Tech Stack Selection",
+      "description": "Evaluate and recommend technology choices",
+      "pattern": "RLM/prompts/patterns/decision-matrix.md",
+      "status": "pending"
+    },
+    {
+      "id": "generate-prd",
+      "name": "Generate PRD",
+      "description": "Create Product Requirements Document",
+      "template": "RLM/templates/PRD-TEMPLATE.md",
+      "output": "RLM/specs/PRD.md",
+      "status": "pending"
+    },
+    {
+      "id": "generate-constitution",
+      "name": "Generate Constitution",
+      "description": "Create project standards and conventions",
+      "template": "RLM/templates/CONSTITUTION-TEMPLATE.md",
+      "output": "RLM/specs/constitution.md",
+      "status": "pending"
+    }
+  ],
+  "status": "pending"
+}

@@ -1,0 +1,44 @@
+{
+  "project": {
+    "name": "",
+    "description": "",
+    "version": "0.1.0",
+    "type": "pending",
+    "designRequired": null
+  },
+  "rlm": {
+    "automationLevel": "SUPERVISED",
+    "phases": {
+      "discover": { "status": "pending" },
+      "design": { "status": "pending" },
+      "specs": { "status": "pending" },
+      "featureDesign": { "status": "pending" },
+      "tasks": { "status": "pending" },
+      "implement": { "status": "pending" },
+      "quality": { "status": "pending" },
+      "verify": { "status": "pending" },
+      "report": { "status": "pending" }
+    },
+    "contextThresholds": {
+      "warning": 50,
+      "wrapUp": 75,
+      "critical": 90
+    }
+  },
+  "testing": {
+    "coverageTarget": 80,
+    "tddRequired": true,
+    "framework": ""
+  },
+  "sandbox": {
+    "enabled": false,
+    "provider": "auto",
+    "providerOptions": ["auto", "e2b", "docker"],
+    "defaultTemplate": null,
+    "defaultTimeout": 600,
+    "bestOfN": {
+      "enabled": false,
+      "count": 3
+    }
+  }
+}

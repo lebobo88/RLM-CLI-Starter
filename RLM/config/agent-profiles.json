@@ -1,0 +1,72 @@
+{
+  "agents": {
+    "rlm-discover": {
+      "role": "research-agent",
+      "description": "Discovery phase — idea to PRD",
+      "phase": 1
+    },
+    "rlm-design": {
+      "role": "design-agent",
+      "description": "Design system generation",
+      "phase": 2
+    },
+    "rlm-specs": {
+      "role": "master-architect",
+      "description": "Feature specs and architecture",
+      "phase": 3
+    },
+    "rlm-feature-design": {
+      "role": "design-agent",
+      "description": "Per-feature UI/UX design",
+      "phase": 4
+    },
+    "rlm-tasks": {
+      "role": "team-lead-agent",
+      "description": "Task breakdown and dependency mapping",
+      "phase": 5
+    },
+    "rlm-implement": {
+      "role": "implementation-agent",
+      "description": "TDD implementation (Red → Green → Refactor)",
+      "phase": 6,
+      "subRoles": ["code-writer-agent", "test-writer-agent"]
+    },
+    "rlm-quality": {
+      "role": "reviewer-agent",
+      "description": "Code review, testing, design QA",
+      "phase": 7,
+      "subRoles": ["testing-agent"]
+    },
+    "rlm-verify": {
+      "role": "verifier-agent",
+      "description": "E2E feature verification",
+      "phase": 8
+    },
+    "rlm-report": {
+      "role": "doc-validator-agent",
+      "description": "Progress reports and metrics",
+      "phase": 9
+    },
+    "rlm-orchestrator": {
+      "role": "team-lead-agent",
+      "description": "Full 9-phase pipeline coordination"
+    },
+    "rlm-resume": {
+      "role": "implementation-agent",
+      "description": "Resume interrupted sessions"
+    },
+    "rlm-debug": {
+      "role": "devops-agent",
+      "description": "RLM state diagnostics and repair"
+    },
+    "rlm-sandbox": {
+      "role": "devops-agent",
+      "description": "E2B cloud sandbox management for isolated execution"
+    }
+  },
+  "defaults": {
+    "model": "default",
+    "maxTokens": 8192,
+    "note": "Model selection is handled by Copilot CLI via /model command. Set 'default' to use the CLI's default model."
+  }
+}

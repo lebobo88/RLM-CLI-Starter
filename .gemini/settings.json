@@ -1,0 +1,92 @@
+{
+  "experimental": {
+    "enableAgents": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "name": "rlm-session-start",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/session-start.ps1",
+            "timeout": 15000
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "name": "rlm-session-end",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/session-end.ps1",
+            "timeout": 15000
+          }
+        ]
+      }
+    ],
+    "BeforeTool": [
+      {
+        "matcher": "run_shell_command",
+        "hooks": [
+          {
+            "name": "rlm-pre-tool-safety",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/pre-tool-safety.ps1",
+            "timeout": 10000
+          }
+        ]
+      },
+      {
+        "matcher": "write_file|replace",
+        "hooks": [
+          {
+            "name": "rlm-pre-tool-safety-edit",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/pre-tool-safety-edit.ps1",
+            "timeout": 10000
+          }
+        ]
+      }
+    ],
+    "AfterTool": [
+      {
+        "matcher": "run_shell_command|write_file|replace",
+        "hooks": [
+          {
+            "name": "rlm-post-tool-log",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/post-tool-log.ps1",
+            "timeout": 10000
+          }
+        ]
+      }
+    ],
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "name": "rlm-agent-log",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/agent-log.ps1",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "AfterAgent": [
+      {
+        "hooks": [
+          {
+            "name": "rlm-agent-log",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/agent-log.ps1",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
+  }
+}

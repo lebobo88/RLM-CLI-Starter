@@ -1,0 +1,53 @@
+# {{PROJECT_NAME}} - Agent Instructions (RLM v2.7)
+
+This project uses the RLM methodology for AI-assisted development.
+
+## Before You Start
+
+1. **Read Overview**: Start with `RLM/START-HERE.md` for workflow overview
+2. **Read the Task**: Check `RLM/tasks/active/TASK-XXX.md` for requirements
+3. **Read the Spec**: Find feature spec in `RLM/specs/features/FTR-XXX/`
+4. **Check Constitution**: Follow standards in `RLM/specs/constitution.md`
+5. **Use Prompts**: Reference `RLM/prompts/` for workflow guidance
+
+## TDD 5-Step Process (Required)
+
+Always follow this sequence:
+
+1. **Load Context** (0-20%): Read task spec, feature spec, constitution
+2. **Write Tests** (20-40%): TDD Red - write failing tests first
+3. **Implement** (40-70%): TDD Green - write minimal code to pass tests
+4. **Verify** (70-85%): Run tests, fix failures, check coverage
+5. **Review** (85-100%): Quality checks, update status, move task to completed
+
+## Task Completion Checklist
+
+Before marking a task complete:
+- [ ] All acceptance criteria from task file met
+- [ ] Tests written and passing (80%+ coverage target)
+- [ ] No linter errors
+- [ ] Code follows constitution standards
+- [ ] Update `RLM/progress/status.json`
+- [ ] Move task to `RLM/tasks/completed/`
+- [ ] PR description references TASK-XXX
+
+## Key Directories
+
+| Directory | Purpose |
+|-----------|---------|
+| `RLM/START-HERE.md` | Entry point - read this first |
+| `RLM/prompts/` | Workflow prompts (01-08) |
+| `RLM/specs/PRD.md` | Product requirements |
+| `RLM/specs/constitution.md` | Coding standards |
+| `RLM/specs/features/` | Feature specifications |
+| `RLM/specs/design/` | Design system (UI projects) |
+| `RLM/tasks/active/` | Tasks to implement |
+| `RLM/tasks/completed/` | Finished tasks |
+| `RLM/progress/status.json` | Current project state |
+
+## Error Handling
+
+If you encounter blockers:
+1. Document the blocker in your PR description
+2. Create a follow-up issue if needed
+3. Do NOT mark task as complete if blocked

@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "hooks": {
+    "copilot:session.start": [
+      {
+        "type": "command",
+        "powershell": ".github/hooks/scripts/session-start.ps1",
+        "bash": "bash .github/hooks/scripts/session-start.sh",
+        "cwd": ".",
+        "timeoutSec": 15
+      }
+    ],
+    "copilot:session.end": [
+      {
+        "type": "command",
+        "powershell": ".github/hooks/scripts/session-end.ps1",
+        "bash": "bash .github/hooks/scripts/session-end.sh",
+        "cwd": ".",
+        "timeoutSec": 15
+      }
+    ],
+    "copilot:tool.pre": [
+      {
+        "type": "command",
+        "powershell": ".github/hooks/scripts/pre-tool-safety.ps1",
+        "bash": "bash .github/hooks/scripts/pre-tool-safety.sh",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
+    "copilot:tool.post": [
+      {
+        "type": "command",
+        "powershell": ".github/hooks/scripts/post-tool-log.ps1",
+        "bash": "bash .github/hooks/scripts/post-tool-log.sh",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
+    "copilot:prompt.pre": [
+      {
+        "type": "command",
+        "powershell": ".github/hooks/scripts/prompt-context.ps1",
+        "bash": "bash .github/hooks/scripts/prompt-context.sh",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
+    "copilot:prompt.post": [
+      {
+        "type": "command",
+        "powershell": ".github/hooks/scripts/prompt-log.ps1",
+        "bash": "bash .github/hooks/scripts/prompt-log.sh",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

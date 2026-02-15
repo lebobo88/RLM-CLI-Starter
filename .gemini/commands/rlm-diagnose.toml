@@ -1,0 +1,10 @@
+description = "Diagnose terminal rendering issues (ghost lines) and environment capabilities"
+
+prompt = """
+# RLM Diagnose
+
+I will run the terminal diagnostic script to check for rendering issues (ghost lines) and environment capabilities.
+
+Results:
+!{powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/diagnose-ghost-lines.ps1}
+"""

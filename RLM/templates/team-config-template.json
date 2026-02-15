@@ -1,0 +1,31 @@
+{
+  "team_name": "{project}-{phase}",
+  "phase": "implement",
+  "orchestration_mode": "team",
+  "max_teammates": 5,
+  "task_assignment_strategy": "dag-priority",
+  "dag_integration": true,
+  "manifest_verification": true,
+  "quality_gates": {
+    "require_tests_pass": true,
+    "require_manifest": true,
+    "require_file_verification": true
+  },
+  "safety": {
+    "experimental_warning": true,
+    "fallback_to_primary_led": true,
+    "max_teammate_retries": 2
+  },
+  "teammate_models": {
+    "coder": "sonnet",
+    "designer": "sonnet",
+    "tester": "haiku",
+    "reviewer": "sonnet",
+    "verifier": "sonnet"
+  },
+  "cost_tracking": {
+    "enabled": true,
+    "warn_at_token_count": 500000,
+    "max_token_budget": 1000000
+  }
+}

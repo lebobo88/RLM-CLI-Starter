@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:shipyard.build)",
+      "WebFetch(domain:www.eesel.ai)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:geminicli.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(docker info:*)"
+    ]
+  }
+}

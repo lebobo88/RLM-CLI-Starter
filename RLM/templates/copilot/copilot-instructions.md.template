@@ -1,0 +1,79 @@
+# {{PROJECT_NAME}} - Copilot Instructions (RLM v3.0.0)
+
+## Universal Instructions
+See AGENTS.md for complete project instructions that work across all AI coding tools.
+
+## Project Overview
+{{PROJECT_DESCRIPTION}}
+
+## Methodology
+This project follows the RLM (Research-Lead-Manage) methodology:
+- **Start here**: Read `RLM/START-HERE.md` for workflow overview
+- **Prompts**: Use prompts in `RLM/prompts/` for each workflow step
+- **Specs**: Read specs from `RLM/specs/` before implementing any feature
+- **TDD**: Write failing tests first, then implementation (5-step process)
+- **Tasks**: Reference task files in `RLM/tasks/active/` for requirements
+- **Standards**: Follow standards defined in `RLM/specs/constitution.md`
+- **Progress**: Update `RLM/progress/status.json` after completing tasks
+
+## Technology Stack
+{{TECH_STACK_SUMMARY}}
+
+## Coding Standards
+
+### General Principles
+- Readability over cleverness
+- DRY (Don't Repeat Yourself)
+- KISS (Keep It Simple)
+- YAGNI (You Aren't Gonna Need It)
+
+### Naming Conventions
+| Element | Convention | Example |
+|---------|------------|---------|
+| Variables | camelCase | `userName`, `isActive` |
+| Functions | camelCase | `getUserById`, `calculateTotal` |
+| Classes | PascalCase | `UserService`, `OrderProcessor` |
+| Constants | UPPER_SNAKE_CASE | `MAX_RETRY_COUNT` |
+| Files (components) | PascalCase | `UserProfile.tsx` |
+| Files (utilities) | kebab-case | `date-utils.ts` |
+
+### Code Quality
+- Functions < 50 lines
+- 80%+ test coverage target
+- TypeScript strict mode
+- Document all public APIs
+
+## Testing Requirements
+- Unit tests: `[filename].test.ts`
+- Integration tests: `[filename].integration.test.ts`
+- E2E tests: `[filename].e2e.test.ts` (for feature verification)
+- Use AAA pattern (Arrange, Act, Assert)
+- Cover happy path, edge cases, and error scenarios
+- Run tests before marking task complete
+
+## TDD 5-Step Process
+1. **Load Context** (0-20%): Read task spec, feature spec, constitution
+2. **Write Tests** (20-40%): TDD Red - write failing tests first
+3. **Implement** (40-70%): TDD Green - write code to pass tests
+4. **Verify** (70-85%): Run tests, fix failures, check coverage
+5. **Review** (85-100%): Quality checks, update status, move task to completed
+
+## File Structure
+| Directory | Purpose |
+|-----------|---------|
+| `RLM/START-HERE.md` | Entry point - read this first |
+| `RLM/prompts/` | Workflow prompts (01-08) |
+| `RLM/specs/PRD.md` | Product Requirements Document |
+| `RLM/specs/constitution.md` | Project standards |
+| `RLM/specs/features/FTR-XXX/` | Feature specifications |
+| `RLM/specs/architecture/` | Technical architecture |
+| `RLM/specs/design/` | Design system (UI projects) |
+| `RLM/tasks/active/` | Tasks to implement |
+| `RLM/tasks/completed/` | Finished tasks |
+| `RLM/progress/status.json` | Current project state |
+
+## Git Workflow
+- Branch: `feature/TASK-XXX-brief-description`
+- Commits: Conventional commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`)
+- Reference specs in commits (e.g., "feat: Implements FTR-001")
+- Always link to task ID in commit/PR
