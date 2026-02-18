@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml-stylesheet type="text/xsl" href="/include/design2.xsl" ?>
+  <companyFilings>
+    <companyInfo>
+      <CIK>0000320193</CIK>
+      <CIKHREF>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0000320193&amp;owner=include&amp;count=10</CIKHREF>
+      <Location>CA</Location>
+      <SIC>3571</SIC>
+      <SICDescription>ELECTRONIC COMPUTERS</SICDescription>
+      <SICHREF>https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;SIC=3571&amp;owner=include&amp;count=10</SICHREF>
+      <businessAddress>
+        <city>CUPERTINO</city>
+        <phoneNumber>(408) 996-1010</phoneNumber>
+        <state>CA</state>
+        <street>ONE APPLE PARK WAY</street>
+        <zipCode>95014</zipCode>
+      </businessAddress>
+      <fiscalYearEnd>0926</fiscalYearEnd>
+      <formerNames>
+        <formerName>
+          <date>2007-01-04</date>
+          <name>APPLE COMPUTER INC</name>
+        </formerName>
+        <formerName>
+          <date>1997-07-28</date>
+          <name>APPLE COMPUTER INC/ FA</name>
+        </formerName>
+        <formerName>
+          <date>2019-08-05</date>
+          <name>APPLE INC</name>
+        </formerName>
+      </formerNames>
+      <mailingAddress>
+        <city>CUPERTINO</city>
+        <state>CA</state>
+        <street>ONE APPLE PARK WAY</street>
+        <zipCode>95014</zipCode>
+      </mailingAddress>
+      <name>Apple Inc.</name>
+      <stateOfIncorporation>CA</stateOfIncorporation>
+    </companyInfo>
+    <results>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0000320193-25-000079&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2025-10-31</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0000320193-24-000123&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2024-11-01</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000032019324000123/0000320193-24-000123-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0000320193-23-000106&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2023-11-03</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000032019323000106/0000320193-23-000106-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0000320193-22-000108&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2022-10-28</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/0000320193-22-000108-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0000320193-21-000105&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2021-10-29</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000032019321000105/0000320193-21-000105-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0000320193-20-000096&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2020-10-30</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000032019320000096/0000320193-20-000096-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0000320193-19-000119&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2019-10-31</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000032019319000119/0000320193-19-000119-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0000320193-18-000145&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2018-11-05</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/0000320193-18-000145-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0000320193-17-000070&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2017-11-03</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000032019317000070/0000320193-17-000070-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+      <filing>
+        <XBRLREF>https://www.sec.gov/cgi-bin/viewer?action=view&amp;cik=320193&amp;accession_number=0001628280-16-020309&amp;xbrl_type=v</XBRLREF>
+        <dateFiled>2016-10-26</dateFiled>
+        <filingHREF>https://www.sec.gov/Archives/edgar/data/320193/000162828016020309/0001628280-16-020309-index.htm</filingHREF>
+        <formName>Annual report [Section 13 and 15(d), not S-K Item 405]</formName>
+        <type>10-K</type>
+      </filing>
+    </results>
+  </companyFilings>

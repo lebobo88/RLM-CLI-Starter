@@ -1,5 +1,5 @@
 # RLM Session Start Hook
-# Logs session start and loads RLM pipeline state
+# Logs session start, loads RLM pipeline state, and initializes status bar
 
 $ErrorActionPreference = "Stop"
 
@@ -9,6 +9,18 @@ try {
     $source = $input.source
     $cwd = $input.cwd
     $sessionId = if ($input.PSObject.Properties['sessionId']) { $input.sessionId } else { "" }
+
+    # Import modules
+    $statusBarModule = Join-Path $cwd ".github" "hooks" "scripts" "lib" "status-bar.ps1"
+    if (Test-Path $statusBarModule) {
+        . $statusBarModule
+    }
+    
+    $welcomeModule = Join-Path $cwd ".github" "hooks" "scripts" "lib" "orchestrator-welcome.ps1"
+    $hasWelcomeModule = Test-Path $welcomeModule
+    if ($hasWelcomeModule) {
+        . $welcomeModule
+    }
 
     # Ensure logs directory exists
     $logDir = Join-Path $cwd "RLM" "progress" "logs"
@@ -64,6 +76,45 @@ try {
     }
 
     $jsonEntry | ConvertTo-Json -Compress | Add-Content -Path $jsonlFile
+
+    # Load orchestrator autoload config
+    $configPath = Join-Path $cwd ".github" "hooks" "config" "status-bar-config.json"
+    $showWelcome = $false
+    $welcomeFormat = "verbose"
+    
+    if (Test-Path $configPath) {
+        try {
+            $config = Get-Content $configPath -Raw | ConvertFrom-Json
+            if ($config.PSObject.Properties['orchestrator_autoload']) {
+                $autoloadConfig = $config.orchestrator_autoload
+                $showWelcome = $autoloadConfig.enabled -and $autoloadConfig.show_welcome
+                $welcomeFormat = if ($autoloadConfig.PSObject.Properties['welcome_format']) { $autoloadConfig.welcome_format } else { "verbose" }
+            }
+        } catch {
+            # Config parsing failed, use defaults
+        }
+    }
+
+    # Show orchestrator welcome screen (if enabled)
+    if ($showWelcome -and $hasWelcomeModule) {
+        try {
+            Show-OrchestratorWelcome -Format $welcomeFormat
+        } catch {
+            # Welcome screen is optional, don't block
+        }
+    } elseif (Test-Path $statusBarModule) {
+        # Fallback to old status bar display
+        try {
+            Write-Host "`n╔═══════════════════════════════════════════╗" -ForegroundColor Cyan
+            Write-Host "║       RLM Pipeline Session Started        ║" -ForegroundColor Cyan
+            Write-Host "╚═══════════════════════════════════════════╝`n" -ForegroundColor Cyan
+            
+            Show-StatusBar -Format "compact"
+            Write-Host ""
+        } catch {
+            # Status bar is optional, don't block
+        }
+    }
 
     exit 0
 } catch {

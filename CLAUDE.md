@@ -13,9 +13,9 @@ The pipeline runs through Copilot CLI custom agents (`.github/agents/`). Each ag
 ## Architecture
 
 Three CLI integrations drive the same pipeline:
-1. **Copilot CLI agents** (`.github/agents/`) — 17 custom agents
-2. **Claude Code commands** (`.claude/commands/`) — 17 slash commands
-3. **Gemini CLI agents + commands** (`.gemini/agents/`, `.gemini/commands/`) — 17 sub-agents + 17 TOML commands
+1. **Copilot CLI agents** (`.github/agents/`) — 24 custom agents
+2. **Claude Code commands** (`.claude/commands/`) — 21 slash commands + 6 sub-agents + 6 skills
+3. **Gemini CLI agents + commands** (`.gemini/agents/`, `.gemini/commands/`) — 24 sub-agents + 22 TOML commands
 
 Shared layers:
 - **Pipeline prompts** (`RLM/prompts/`) — Canonical workflow instructions (00-DETECT through 09-VERIFY-FEATURE)
@@ -53,7 +53,7 @@ Phase 1 scores the idea against UI indicators (+1 each: UI mentions, screens/pag
 - **Net score <= -2** → `DESIGN_REQUIRED = false` — Phases 2 & 4 skip
 - **-1 to 2** → Ambiguous — ask user
 
-The result is stored in `RLM/progress/config.json` under `design.design_required`.
+The result is stored in `RLM/progress/config.json` (generated at runtime by Phase 1) under `design.design_required`.
 
 ## TDD 5-Step Process (Phase 6+, Mandatory)
 
@@ -159,51 +159,153 @@ Two instruction files in `.github/instructions/` apply coding standards by file 
 
 ## Claude Code Slash Commands
 
-Claude Code users can invoke the RLM pipeline using these slash commands (defined in `.claude/commands/`):
+Claude Code users can invoke the RLM pipeline using these slash commands (defined in `.claude/commands/`). Each command specifies a `model` for optimal cost/quality and uses `context:` with `!` dynamic injection to auto-load pipeline state at invocation time.
 
-| Command | Phase | Purpose |
-|---------|-------|---------|
-| `/rlm` | All | Full 9-phase pipeline orchestration |
-| `/rlm-discover` | 1 | Transform idea into PRD + Constitution |
-| `/rlm-design` | 2 | Generate design system (UI only) |
-| `/rlm-specs` | 3 | Feature specs + architecture |
-| `/rlm-feature-design` | 4 | Per-feature UI/UX design |
-| `/rlm-tasks` | 5 | Break features into tasks |
-| `/rlm-implement` | 6 | TDD implementation (single task) |
-| `/rlm-implement-all` | 6 | TDD implementation (all tasks) |
-| `/rlm-quality` | 7 | Code review + testing + design QA |
-| `/rlm-verify` | 8 | E2E feature verification |
-| `/rlm-report` | 9 | Progress reports + metrics |
-| `/rlm-resume` | — | Resume interrupted sessions |
-| `/rlm-debug` | — | Diagnose/repair RLM state |
-| `/rlm-fix-bug` | — | Structured bug investigation + fix |
-| `/rlm-prime` | — | Pre-load feature/task context |
-| `/rlm-new-agent` | — | Create a new agent across all CLI platforms |
-| `/rlm-sandbox` | — | Manage E2B cloud sandboxes for isolated execution |
+| Command | Phase | Model | Purpose |
+|---------|-------|-------|---------|
+| `/rlm` | All | opus | Full 9-phase pipeline orchestration |
+| `/rlm-discover` | 1 | opus | Transform idea into PRD + Constitution |
+| `/rlm-analyst` | 2 | sonnet | Financial analysis, XBRL parsing, and data cleaning |
+| `/rlm-design` | 2 | opus | Generate design system (UI only) |
+| `/rlm-specs` | 3 | opus | Feature specs + architecture |
+| `/rlm-feature-design` | 4 | opus | Per-feature UI/UX design |
+| `/rlm-tasks` | 5 | sonnet | Break features into tasks |
+| `/rlm-implement` | 6 | sonnet | TDD implementation (single task) |
+| `/rlm-implement-all` | 6 | sonnet | TDD implementation (all tasks) |
+| `/rlm-quality` | 7 | sonnet | Code review + testing + design QA |
+| `/rlm-verify` | 8 | sonnet | E2E feature verification |
+| `/rlm-report` | 9 | sonnet | Progress reports + metrics |
+| `/rlm-resume` | — | sonnet | Resume interrupted sessions |
+| `/rlm-debug` | — | sonnet | Diagnose/repair RLM state |
+| `/rlm-fix-bug` | — | sonnet | Structured bug investigation + fix |
+| `/rlm-prime` | — | sonnet | Pre-load feature/task context |
+| `/rlm-new-agent` | — | sonnet | Create a new agent across all CLI platforms |
+| `/rlm-sandbox` | — | sonnet | Manage E2B cloud sandboxes for isolated execution |
+| `/rlm-team` | — | opus | Orchestrate agent teams for parallel phase execution |
+| `/rlm-observe` | — | sonnet | Generate observability reports for multi-agent workflows |
+| `/gemini-analyzer` | — | sonnet | Invoke Gemini CLI for large-scale codebase analysis |
+
+### Command Frontmatter v2
+
+All commands use the v2 frontmatter schema with dynamic context injection:
+
+```yaml
+---
+description: "One-line description"
+argument-hint: "<hint>"
+model: opus|sonnet|haiku
+context:
+  - "!cat RLM/progress/pipeline-state.json"
+  - "!cat RLM/progress/.current-context.md"
+skills:
+  - tdd-workflow
+  - spec-writing
+---
+```
+
+- `model` — Which Claude model to use (opus for deep reasoning, sonnet for balanced, haiku for fast)
+- `context` — Files/commands to auto-load; `!` prefix runs shell command and injects output
+- `skills` — Pre-load these skills into the command's context
+
+## Claude Code Skills
+
+Skills provide on-demand knowledge, hooks, and dynamic context. Defined in `.claude/skills/`:
+
+| Skill | User-Invocable | Model | Context | Purpose |
+|-------|---------------|-------|---------|---------|
+| `rlm-pipeline` | Yes | — | — | 9-phase pipeline navigation guide with state management |
+| `spec-writing` | Yes | sonnet | — | Feature spec, PRD, ADR writing with prompt-based validation |
+| `tdd-workflow` | Yes | sonnet | — | TDD red-green-refactor with prompt-based enforcement |
+| `sandbox` | Yes | — | — | E2B/Docker sandbox management reference |
+| `fork-terminal` | Yes | haiku | fork | Spawn isolated terminal contexts for experiments |
+| `observability` | No | haiku | fork | Agent monitoring and trace logging (auto-invoked) |
+
+### Skill Features (v2)
+
+- **Dynamic `!` injection**: Skill bodies use `!`backtick`!` syntax to inject live pipeline state (e.g., `!cat RLM/progress/pipeline-state.json`)
+- **`allowed-tools`**: Each skill restricts which tools are available (e.g., observability is read-only: `Read, Grep, Glob`)
+- **`context: fork`**: Skills like `observability` and `fork-terminal` run in isolated context windows to save tokens
+- **Prompt hooks**: Skills like `spec-writing` and `tdd-workflow` use `type: prompt` hooks with `model: haiku` for fast semantic validation
 
 ## Claude Code Sub-agents
 
-Claude Code supports custom sub-agents in `.claude/agents/`. These are specialized expert wrappers that the main Claude agent can delegate to using `@<agent-name>`.
+Sub-agents in `.claude/agents/` are specialized agents with enforced constraints. Each agent specifies `model`, `disallowedTools`, `maxTurns`, `context`, and `skills` in frontmatter.
 
-| Agent | Purpose |
-|-------|---------|
-| `@gemini-analyzer` | Expert wrapper for Gemini CLI. Use this for large-scale codebase analysis (1M+ context). |
+| Agent | Model | maxTurns | disallowedTools | Skills | Purpose |
+|-------|-------|----------|-----------------|--------|---------|
+| `@gemini-analyzer` | sonnet | 10 | — | — | Expert wrapper for Gemini CLI (1M+ context) |
+| `@gemini-research` | sonnet | 15 | — | — | Deep research via Gemini 3 Pro Preview + Google Search Grounding |
+| `@gemini-image` | haiku | 5 | — | — | AI image generation via AuthHub SDK (nano-banana-pro / gemini-2.5-flash-image) |
+| `@gemini-content` | haiku | 10 | — | — | Rapid content generation via Gemini 3 Flash (blog, docs, copy, email) |
+| `@gemini-frontend-designer` | sonnet | 20 | — | — | Frontend design spec + mockups via Gemini 3 Pro Preview + @gemini-image |
+| `@team-lead` | opus | 100 | — | rlm-pipeline, observability | Orchestrate agent teams for parallel task execution |
+| `@code-writer` | sonnet | 50 | Bash | tdd-workflow | TDD Green phase — write implementation code |
+| `@test-writer` | sonnet | 30 | Bash, Edit | tdd-workflow | TDD Red phase — write test files |
+| `@reviewer` | sonnet | 20 | Write, Edit | spec-writing | Code review and security audit (read-only) |
+| `@tester` | sonnet | 40 | — | tdd-workflow | QA — run tests, analyze failures, validate coverage |
+
+### Sub-agent Hardening (v2)
+
+- **`disallowedTools`**: Explicit deny lists prevent agents from exceeding their role (e.g., code-writer cannot use Bash, reviewer cannot Write)
+- **`maxTurns`**: Prevents runaway agent loops (10-100 depending on task complexity)
+- **Dynamic context**: All agents auto-load `RLM/progress/.current-context.md` and `RLM/specs/constitution.md` via `!cat` injection
+- **Prompt hooks**: Agents use `type: prompt` hooks with `model: haiku` for fast role enforcement (e.g., code-writer is blocked from writing test files)
+- **Stop hooks**: Agents like reviewer have Stop hooks that verify required outputs before allowing completion
+
+## Agent Teams
+
+Agent teams enable parallel execution of independent tasks. Configuration in `.claude/settings.json`:
+- `"env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" }` — Enable feature
+- `"teammateMode": "auto"` — Auto-detect tmux for split panes, else in-process
+- Use `/rlm-team implement` to start parallel implementation
+- Falls back to sequential execution if teams unavailable
 
 ## Claude Code Hooks
 
-Session lifecycle hooks are configured in `.claude/settings.json` and live in `.claude/hooks/`:
+Session lifecycle hooks are configured in `.claude/settings.json` and live in `.claude/hooks/`. All hooks output structured JSON to stdout for Claude to consume (`{decision, reason, additionalContext}`).
 
 | Hook Event | Script | Purpose |
 |------------|--------|---------|
+| `UserPromptSubmit` | `user-prompt-inject.{sh,ps1}` | Inject pipeline context before every user prompt |
 | `SessionStart` | `session-start.{sh,ps1}` | Log session start, detect active pipeline, generate context file |
 | `SessionEnd` | `session-end.{sh,ps1}` | Log session end, update checkpoint |
 | `PreToolUse` (Bash) | `pre-tool-safety.{sh,ps1}` | Block destructive `rm -rf RLM/specs` etc. |
 | `PreToolUse` (Edit/Write) | `pre-tool-safety-edit.{sh,ps1}` | Block destructive overwrites of RLM progress files |
-| `PostToolUse` (Bash/Edit/Write) | `post-tool-log.{sh,ps1}` | Log tool usage to CSV |
+| `PostToolUse` (Bash/Edit/Write) | `post-tool-log.{sh,ps1}` | Log tool usage to CSV + JSONL |
+| `PostToolUse` (Edit/Write) | `post-state-write-verify.{sh,ps1}` | Validate RLM state files after writes |
+| `PostToolUse` (Write/Edit) | `post-write-validate.{sh,ps1}` | Source code validation (TypeScript `any`, function length) |
+| `PostToolUseFailure` | `post-tool-failure.{sh,ps1}` | Track and log failed tool operations |
+| `SubagentStart` | `subagent-start.{sh,ps1}` | Log sub-agent invocation |
+| `SubagentStop` | `subagent-stop.{sh,ps1}` | Log sub-agent completion |
+| `TaskCompleted` | `task-completed.{sh,ps1}` | Quality gate — verify markers, function length, tests + update checkpoint |
+| `TeammateIdle` | `teammate-idle.{sh,ps1}` | Check for pending tasks, keep teammate working |
+| `PreCompact` | `pre-compact-checkpoint.{sh,ps1}` | Save checkpoint before context compaction |
+| `Stop` | `stop-checkpoint.{sh,ps1}` | Save progress before session ends |
+| `Notification` | `notification-handler.{sh,ps1}` | Log notifications, optional toast/TTS |
+
+### Hook Architecture v2
+
+- **Structured JSON output**: Hooks return `{decision: "allow"|"block", reason, additionalContext}` for Claude to consume
+- **13 hook events**: UserPromptSubmit, SessionStart, SessionEnd, PreToolUse, PostToolUse, PostToolUseFailure, SubagentStart, SubagentStop, TaskCompleted, TeammateIdle, PreCompact, Stop, Notification
+- **Three handler types**: `command` (shell scripts), `prompt` (AI model check with haiku), `agent` (delegate to sub-agent)
+- **Universal event sender**: `lib/event-sender.{ps1,sh}` provides `Send-RlmEvent` for all hooks to emit unified JSONL events
 
 ### Dynamic Context Injection
 
-At session start, the hook generates `RLM/progress/.current-context.md` with the active pipeline phase, current agent, active task, and automation level. **Read this file at the start of any RLM workflow** to restore dynamic pipeline context (equivalent to Copilot CLI's `prompt.pre` hook).
+Two mechanisms provide runtime context:
+
+1. **Session-start hook**: Generates `RLM/progress/.current-context.md` with active pipeline phase, current agent, active task, and automation level.
+
+2. **`!` backtick syntax**: Commands and skills use `!cat RLM/progress/pipeline-state.json` in their `context:` field to inject live state at invocation time. This replaces the manual "read .current-context.md" pattern.
+
+### Observability v2
+
+All hooks emit events to a unified JSONL event stream via `lib/event-sender.{ps1,sh}`:
+- **Event log**: `RLM/progress/logs/events.jsonl`
+- **Tool usage**: `RLM/progress/logs/tool-usage.{csv,jsonl}`
+- **Agent traces**: `RLM/progress/logs/agents/{agent-id}.jsonl` — with `trace_id`, `parent_trace_id`, `duration_ms`
+- **Team coordination**: `RLM/progress/logs/team-coordination.jsonl`
+- **Trace correlation**: `RLM_TRACE_ID` and `RLM_PARENT_TRACE_ID` env vars link parent → sub-agent → tool operations
 
 ### Platform-Specific Settings
 
@@ -219,12 +321,29 @@ Two settings variants are provided:
 cp .claude/settings-unix.json .claude/settings.json
 ```
 
+## Hook Shared Libraries
+
+Reusable PowerShell/Bash libraries in `.claude/hooks/lib/`:
+
+| Library | Purpose |
+|---------|---------|
+| `atomic-write.{ps1,sh}` | `Write-AtomicJson` / `Write-AtomicFile` with file locking integration |
+| `file-locking.{ps1,sh}` | `Lock-File` / `Unlock-File` for concurrent access protection |
+| `agent-tracer.{ps1,sh}` | `Start-AgentTrace` / `Stop-AgentTrace` / `Add-AgentEvent` with trace correlation |
+| `schema-validators.{ps1,sh}` | `Test-CheckpointSchema` / `Test-PipelineStateSchema` / `Test-StatusSchema` |
+| `event-sender.{ps1,sh}` | `Send-RlmEvent` — universal event emitter for unified JSONL stream |
+| `code-quality-check.{ps1,sh}` | Source code validation (TypeScript `any` detection, function length checks) |
+| `monitor-state-health.{ps1,sh}` | Pipeline state file health monitoring and corruption detection |
+
 ## Skill-Equivalent Knowledge Sections
 
-Claude Code does not have Copilot CLI's on-demand skills system. The equivalent knowledge is available at these locations — reference them selectively to conserve context:
+Claude Code has its own skills system (`.claude/skills/`) with dynamic context injection, hooks, and model selection. The following table maps Copilot CLI skills to Claude Code equivalents:
 
-| Copilot Skill | Claude Code Equivalent | When to Reference |
-|---------------|----------------------|-------------------|
-| `rlm-pipeline` | This file (9-Phase Pipeline, Automation Levels, Context Thresholds) | Navigating phases, state management |
-| `spec-writing` | `RLM/templates/` + Artifact Conventions section above | Writing feature specs, PRDs, ADRs |
-| `tdd-workflow` | TDD 5-Step Process section above + `.github/instructions/source-code.instructions.md` | During Phase 6+ implementation |
+| Copilot Skill | Claude Code Skill | When to Reference |
+|---------------|------------------|-------------------|
+| `rlm-pipeline` | `.claude/skills/rlm-pipeline/SKILL.md` | Navigating phases, state management |
+| `spec-writing` | `.claude/skills/spec-writing/SKILL.md` | Writing feature specs, PRDs, ADRs |
+| `tdd-workflow` | `.claude/skills/tdd-workflow/SKILL.md` | During Phase 6+ implementation |
+| `sandbox` | `.claude/skills/sandbox/SKILL.md` | E2B/Docker sandbox management |
+| (none) | `.claude/skills/fork-terminal/SKILL.md` | Spawning isolated terminal contexts |
+| (none) | `.claude/skills/observability/SKILL.md` | Agent monitoring (auto-invoked) |

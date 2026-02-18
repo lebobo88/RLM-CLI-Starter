@@ -32,7 +32,7 @@ try {
     }
     $jsonEntry | ConvertTo-Json -Compress | Add-Content -Path $jsonlFile
 
-    # Update checkpoint
+    # Update checkpoint with file locking
     $checkpointFile = Join-Path $cwd "RLM" "progress" "checkpoint.json"
     $checkpoint = @{
         lastSession = @{
@@ -41,7 +41,19 @@ try {
             sessionId = $sessionId
         }
     }
-    $checkpoint | ConvertTo-Json -Compress | Set-Content -Path $checkpointFile
+
+    $libPath = Join-Path $PSScriptRoot "lib" "file-locking.ps1"
+    if (Test-Path $libPath) {
+        . $libPath
+        $lock = Lock-File -Path $checkpointFile -TimeoutSeconds 10
+        try {
+            $checkpoint | ConvertTo-Json -Compress | Set-Content -Path $checkpointFile
+        } finally {
+            if ($lock) { Unlock-File -LockToken $lock }
+        }
+    } else {
+        $checkpoint | ConvertTo-Json -Compress | Set-Content -Path $checkpointFile
+    }
 
     # --- Sandbox State Logging (read-only, no teardown) ---
     $sandboxStateFile = Join-Path $cwd "sandbox" ".sandbox-state.json"

@@ -1,6 +1,7 @@
 ---
 description: "Create a new RLM agent across all CLI platforms (Copilot, Claude Code, Gemini)"
 argument-hint: "<agent-name> <description>"
+model: sonnet
 ---
 
 # RLM New Agent — Cross-Platform Agent Scaffolding

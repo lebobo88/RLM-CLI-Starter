@@ -1,87 +1,48 @@
-# Product Requirements Document (PRD)
+# BRD - Enterprise Automation Hub (OPA)
 
 ## Executive Summary
-**Agentic CLI** is a world-class, autonomous coding tool designed to operate directly from the terminal. Built on a multi-agent architecture and the Recursive Language Model (RLM) pattern, it aims to match or exceed the capabilities of state-of-the-art tools like Claude Code. It empowers developers by intelligently planning, executing, and verifying complex coding tasks, reducing manual toil and context switching.
+The Enterprise Automation Hub is a centralized automation engine designed to scale AI CLI benefits across all core business functions (Legal, Marketing, HR, Ops, IT). Following the success of the SEC-Agent Pilot, this hub implements departmental "Digital Workers" to automate high-frequency, manual tasks.
 
 ## Problem Statement
-Modern software development involves repetitive tasks, complex refactoring, and constant context switching between IDEs, documentation, and terminals. Existing AI coding assistants are often limited to single-file context or lack the agency to perform multi-step operations reliably. Developers need a tool that lives in their terminal, understands their entire codebase, and can autonomously execute complex workflows with high reliability and verification.
+While the SEC-Agent proved ROI in Finance, other departments still operate at a manual baseline of 5-10 hours/week per employee on administrative triage, document drafting, and operational monitoring.
 
-## Target Users
-*   **Software Engineers:** For accelerating feature development, refactoring, and bug fixing.
-*   **DevOps Engineers:** For automating infrastructure scripts and configuration management.
-*   **Technical Leads:** For architectural reviews and ensuring code consistency across large codebases.
+## Target Departments & Use Cases
+### 1. Corporate Functions (Secretary)
+- **Use Case**: Daily Meeting & Inbox Briefing.
+- **Goal**: 3 hours saved per week per executive.
 
-## Core Features (MVP)
+### 2. Legal Department
+- **Use Case**: NDA Generation & Risk Flagging.
+- **Goal**: 12 hours reduced to 30 minutes for contract batches.
 
-### 1. RLM Orchestration Engine
-*   Implements the **PLAN → SEARCH → NARROW → ACT → VERIFY** cycle.
-*   Decomposes high-level user prompts into executable sub-tasks.
-*   Maintains a persistent "Task Ledger" to track progress and state.
+### 3. Marketing & IR
+- **Use Case**: Multi-channel Content Engine.
+- **Goal**: 48x faster earnings-to-post turnaround.
 
-### 2. Multi-Agent Architecture
-*   **Orchestrator Agent:** Manages the overall plan and delegates tasks.
-*   **Coder Agent:** Writes and modifies code based on specifications.
-*   **Reviewer Agent:** Analyzes code for errors, security issues, and style violations.
-*   **Tester Agent:** Runs tests and validates fixes.
+### 4. Human Resources
+- **Use Case**: Automated New Hire Onboarding.
+- **Goal**: 100% completion of first-week checklist within 24 hours.
 
-### 3. Deep Context Management
-*   File-based state persistence for transparent context tracking.
-*   Intelligent file reading and searching (grep/glob) to understand codebase structure.
-*   Git integration to manage branches, commits, and safe rollbacks.
+### 5. Operations
+- **Use Case**: Logistics & Stockout Triage.
+- **Goal**: Real-time alerts for supply chain bottlenecks.
 
-### 4. Interactive Terminal Interface
-*   Built with `oclif` for a robust command-line experience.
-*   Rich UI elements (spinners, progress bars, diff views) to communicate agent status.
-*   Human-in-the-loop confirmation steps for critical actions.
+### 6. IT & Security
+- **Use Case**: Asset Monitoring & Security Hardening.
+- **Goal**: 0% credential leakage and automated audit trails.
 
-### 5. Pluggable AI Backend
-*   Primary integration with Anthropic's Claude API.
-*   Extensible design to support OpenAI, Gemini, or local LLMs in the future.
+## Success Metrics (Phase 2 Rollout)
+- **Consolidated Time Savings**: 540 hours/week across 105 users.
+- **Total Annual ROI**: $842,400 (Projected).
+- **User Satisfaction**: >8.5/10.
 
-## User Stories
-
-### Feature Development
-*   "As a developer, I want to ask the CLI to 'implement the user login feature based on the auth-service spec', so that it creates the necessary controllers, services, and tests automatically."
-
-### Refactoring
-*   "As a developer, I want to say 'rename the User class to Customer across the entire project', so that the tool safely updates all references and imports without breaking the build."
-
-### Debugging
-*   "As a developer, I want to paste a stack trace and have the CLI identify the root cause, propose a fix, and run tests to verify it."
-
-### Maintenance
-*   "As a maintainer, I want the tool to autonomously run through the codebase and fix all linting errors adhering to the project's `.eslintrc`."
-
-## Success Metrics
-*   **Task Completion Rate:** > 90% success for well-defined coding tasks without human intervention.
-*   **Startup Time:** < 500ms to ready state (using Node.js optimizations).
-*   **Verification Accuracy:** < 5% rate of "hallucinated fixes" (code that looks correct but fails tests).
-*   **User Retention:** > 50% of users returning to use the tool daily.
+## Workflow Sequence (Global Hub)
+1. **Trigger**: Universal CLI or scheduled cron.
+2. **Routing**: Orchestrator delegates to domain specialist (Secretary, Legal, etc.).
+3. **Execution**: Specialist uses MCP and Analyst/Scribe logic.
+4. **Reporting**: Governor audits the output; Report agent aggregates ROI.
 
 ## Technical Constraints
-*   **Runtime:** Node.js (v18+) / TypeScript.
-*   **Compatibility:** Cross-platform (Linux, macOS, Windows).
-*   **Performance:** Must not block the main thread for UI responsiveness; heavy processing offloaded or async.
-*   **Security:** Sandbox execution where possible; explicit user permission for file writes and shell commands.
-
-## Timeline & Phases
-
-### Phase 1: Core Foundation (Weeks 1-2)
-*   CLI skeleton setup with `oclif`.
-*   Basic RLM Orchestrator implementation (Plan -> Act).
-*   Integration with Claude API.
-
-### Phase 2: Agentic Capabilities (Weeks 3-4)
-*   Implement full RLM cycle (Search, Verify).
-*   Add specialized agents (Reviewer, Tester).
-*   Implement robust file system and Git tools.
-
-### Phase 3: Advanced Features & Polish (Weeks 5-6)
-*   Multi-agent coordination/parallelism (if applicable).
-*   Context optimization (token management).
-*   UX improvements (diff views, interactive prompts).
-
-### Phase 4: Beta & Testing (Weeks 7-8)
-*   Internal dogfooding.
-*   Performance tuning (startup time).
-*   Documentation and release.
+- Every automation must integrate with **AWS Secrets Manager**.
+- Every action must be logged in `~/.bash_history_audit`.
+- All outputs must adhere to the **Constitution v2.7** formatting standards.

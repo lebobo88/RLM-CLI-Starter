@@ -1,6 +1,12 @@
 ---
 description: "Phase 9: Generate progress reports, metrics, and project summaries (RLM Method v2.7)"
 argument-hint: "<report type: summary|detailed|metrics|blockers|sprint>"
+model: sonnet
+context:
+  - "!cat RLM/progress/pipeline-state.json"
+  - "!cat RLM/progress/status.json"
+skills:
+  - rlm-pipeline
 ---
 
 # RLM Report — Phase 9: Reporting

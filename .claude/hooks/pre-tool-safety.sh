@@ -18,8 +18,41 @@ if [ "$TOOL_NAME" != "Bash" ]; then
   exit 0
 fi
 
-# Block destructive operations on RLM artifacts
-if echo "$COMMAND" | grep -qE "rm -rf RLM/specs|rm -rf RLM/tasks|rm -rf ./RLM/specs|rm -rf ./RLM/tasks"; then
+if [ -z "$COMMAND" ]; then
+  exit 0
+fi
+
+# --- Normalize to close bypass vectors ---
+NORMALIZED=$(echo "$COMMAND" | sed 's|\\|/|g' | tr -s ' ' | tr -d '"' | tr -d "'" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+if [ -z "$NORMALIZED" ]; then
+  # Normalization produced empty string — block for safety
+  echo "Blocked: failed to normalize command for safety check." >&2
+  exit 2
+fi
+
+# --- Case-insensitive destructive pattern matching ---
+if echo "$NORMALIZED" | grep -iqE "rm\s+-r[f]?\s+.*RLM/(specs|tasks)"; then
+  echo "Blocked: destructive operation on RLM artifacts. Use individual file operations instead." >&2
+  exit 2
+fi
+
+if echo "$NORMALIZED" | grep -iqE "rm\s+-f?r\s+.*RLM/(specs|tasks)"; then
+  echo "Blocked: destructive operation on RLM artifacts. Use individual file operations instead." >&2
+  exit 2
+fi
+
+if echo "$NORMALIZED" | grep -iqE "Remove-Item.*RLM/(specs|tasks).*-Recurse"; then
+  echo "Blocked: destructive operation on RLM artifacts. Use individual file operations instead." >&2
+  exit 2
+fi
+
+if echo "$NORMALIZED" | grep -iqE "Remove-Item.*-Recurse.*RLM/(specs|tasks)"; then
+  echo "Blocked: destructive operation on RLM artifacts. Use individual file operations instead." >&2
+  exit 2
+fi
+
+if echo "$NORMALIZED" | grep -iqE "(del|rmdir|rd)\s+/s.*RLM/(specs|tasks)"; then
   echo "Blocked: destructive operation on RLM artifacts. Use individual file operations instead." >&2
   exit 2
 fi

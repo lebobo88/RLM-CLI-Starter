@@ -1,7 +1,7 @@
 # RLM Pre-Tool Safety Hook (Claude Code)
 # Prevents accidental deletion of RLM spec files and enforces safety guardrails
 # Claude Code stdin JSON: { tool_name, tool_input, session_id, cwd, hook_event_name }
-# Blocking: exit code 2 with reason on stderr
+# Blocking: exit code 2 with structured JSON on stdout
 
 $ErrorActionPreference = "Stop"
 
@@ -16,29 +16,65 @@ try {
 
     # Parse the command from tool_input
     $command = $input.tool_input.command
+    if (-not $command) { exit 0 }
 
-    # Block destructive operations on RLM specs
-    $dangerousPatterns = @(
-        "rm -rf RLM/specs",
-        "rm -rf RLM/tasks",
-        "rm -rf ./RLM/specs",
-        "rm -rf ./RLM/tasks",
-        "Remove-Item.*RLM.specs.*-Recurse",
-        "Remove-Item.*RLM.tasks.*-Recurse",
-        "del /s.*RLM\\specs",
-        "del /s.*RLM\\tasks"
-    )
-
-    foreach ($pattern in $dangerousPatterns) {
-        if ($command -match $pattern) {
-            [Console]::Error.WriteLine("Blocked: destructive operation on RLM artifacts. Use individual file operations instead.")
-            exit 2
-        }
+    # --- Normalize to close bypass vectors ---
+    try {
+        $normalized = $command `
+            -replace '\\', '/' `
+            -replace '\s+', ' ' `
+            -replace '"', '' `
+            -replace "'", ''
+        $normalized = $normalized.Trim()
+    } catch {
+        # If normalization fails, block for safety
+        @{
+            decision = "block"
+            reason = "Failed to normalize command for safety check."
+            additionalContext = "The command could not be safely analyzed. Please simplify the command."
+        } | ConvertTo-Json -Compress
+        exit 2
     }
 
-    # Allow by default
+    # --- Case-insensitive destructive pattern matching ---
+    try {
+        $dangerousPatterns = @(
+            'rm\s+-r[f]?\s+.*RLM/(specs|tasks)',
+            'rm\s+-f?r\s+.*RLM/(specs|tasks)',
+            'Remove-Item.*RLM/(specs|tasks).*-Recurse',
+            'Remove-Item.*-Recurse.*RLM/(specs|tasks)',
+            'del\s+/s.*RLM/(specs|tasks)',
+            'rmdir\s+/s.*RLM/(specs|tasks)',
+            'rd\s+/s.*RLM/(specs|tasks)'
+        )
+
+        foreach ($pattern in $dangerousPatterns) {
+            if ($normalized -imatch $pattern) {
+                @{
+                    decision = "block"
+                    reason = "Destructive operation on RLM artifacts. Use individual file operations instead."
+                    additionalContext = "Protected paths: RLM/specs/, RLM/tasks/. Individual file operations are allowed."
+                } | ConvertTo-Json -Compress
+                exit 2
+            }
+        }
+    } catch {
+        # If pattern matching fails, block for safety
+        @{
+            decision = "block"
+            reason = "Failed to validate command safety."
+            additionalContext = "Pattern matching error during safety check. Please simplify the command."
+        } | ConvertTo-Json -Compress
+        exit 2
+    }
+
+    # Allow with context
+    @{
+        decision = "allow"
+        reason = "Command passed safety check"
+    } | ConvertTo-Json -Compress
     exit 0
 } catch {
-    # Don't block on errors
+    # JSON parse error — don't block session startup
     exit 0
 }

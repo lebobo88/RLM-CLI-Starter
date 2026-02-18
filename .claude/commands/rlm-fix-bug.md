@@ -1,6 +1,11 @@
 ---
 description: "Debug and fix a reported issue using structured root-cause analysis and TDD (RLM Method v2.7)"
 argument-hint: "<bug description or issue reference>"
+model: sonnet
+context:
+  - "!cat RLM/progress/.current-context.md"
+skills:
+  - tdd-workflow
 ---
 
 # RLM Fix Bug — Structured Bug Investigation & Fix

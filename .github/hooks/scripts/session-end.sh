@@ -17,10 +17,22 @@ echo "$NOW | END   | reason=$REASON" >> "$LOG_DIR/sessions.log"
 jq -n --arg ts "$NOW" --arg reason "$REASON" --arg sid "$SESSION_ID" \
   '{timestamp:$ts, event:"session.end", reason:$reason, sessionId:$sid}' >> "$LOG_DIR/sessions.jsonl"
 
-# Update checkpoint with sessionId
+# Update checkpoint with file locking
 CHECKPOINT="$CWD/RLM/progress/checkpoint.json"
-jq -n --arg ts "$NOW" --arg reason "$REASON" --arg sid "$SESSION_ID" \
-  '{lastSession:{endedAt:$ts, reason:$reason, sessionId:$sid}}' > "$CHECKPOINT"
+LIB_DIR="$(dirname "$0")/lib"
+
+if [ -f "$LIB_DIR/file-locking.sh" ]; then
+  . "$LIB_DIR/file-locking.sh"
+  LOCK=$(lock_file "$CHECKPOINT" 10)
+  jq -n --arg ts "$NOW" --arg reason "$REASON" --arg sid "$SESSION_ID" \
+    '{lastSession:{endedAt:$ts, reason:$reason, sessionId:$sid}}' > "$CHECKPOINT"
+  if [ -n "$LOCK" ]; then
+    unlock_file "$LOCK"
+  fi
+else
+  jq -n --arg ts "$NOW" --arg reason "$REASON" --arg sid "$SESSION_ID" \
+    '{lastSession:{endedAt:$ts, reason:$reason, sessionId:$sid}}' > "$CHECKPOINT"
+fi
 
 # --- Sandbox State Logging (read-only, no teardown) ---
 SANDBOX_STATE_FILE="$CWD/sandbox/.sandbox-state.json"

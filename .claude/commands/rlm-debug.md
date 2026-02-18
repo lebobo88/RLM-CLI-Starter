@@ -1,6 +1,10 @@
 ---
 description: "Diagnose and repair RLM state — fix orphaned tasks, validate artifacts (RLM Method v2.7)"
 argument-hint: "<mode: quick|full|auto-fix>"
+model: sonnet
+context:
+  - "!cat RLM/progress/status.json"
+  - "!cat RLM/progress/checkpoint.json"
 ---
 
 # RLM Debug — Diagnostics & Repair

@@ -1,6 +1,12 @@
 ---
 description: "Phase 3: Transform PRD into feature specifications and architecture decisions (RLM Method v2.7)"
 argument-hint: "<optional: specific feature to spec>"
+model: opus
+context:
+  - "!cat RLM/specs/PRD.md"
+  - "!cat RLM/specs/constitution.md"
+skills:
+  - spec-writing
 ---
 
 # RLM Specs — Phase 3: Specifications

@@ -1,0 +1,40 @@
+{
+  "status_bar": {
+    "enabled": true,
+    "format": "compact",
+    "update_interval_ms": 500,
+    "color_scheme": "default",
+    "show_emojis": true,
+    "context_threshold_warning": 75,
+    "context_threshold_critical": 90
+  },
+  "spinner": {
+    "enabled": true,
+    "frame_interval_ms": 80,
+    "message_interval_ms": 3000,
+    "message_weights": {
+      "roasts": 0.33,
+      "tips": 0.33,
+      "progress": 0.34
+    }
+  },
+  "agent_spawner": {
+    "enabled": true,
+    "max_parallel_agents": 10,
+    "animation_duration_ms": 1000,
+    "glitch_probability": 0.05,
+    "effects": {
+      "scanline": true,
+      "flicker": true,
+      "breathing": true
+    }
+  },
+  "orchestrator_autoload": {
+    "enabled": true,
+    "show_welcome": true,
+    "welcome_format": "verbose",
+    "suggest_alias": true,
+    "detect_shell": true,
+    "show_three_ways": true
+  }
+}

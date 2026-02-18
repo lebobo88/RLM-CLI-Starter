@@ -1,5 +1,11 @@
 ---
 description: "Phase 4: Create per-feature UI/UX design specifications (RLM Method v2.7)"
+model: opus
+context:
+  - "!cat RLM/specs/PRD.md"
+  - "!ls RLM/specs/features"
+skills:
+  - spec-writing
 ---
 
 # RLM Feature Design — Phase 4: Feature Design

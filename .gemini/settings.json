@@ -62,6 +62,23 @@
             "timeout": 10000
           }
         ]
+      },
+      {
+        "matcher": "write_file|replace",
+        "hooks": [
+          {
+            "name": "rlm-post-state-write-verify",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/post-state-write-verify.ps1",
+            "timeout": 10000
+          },
+          {
+            "name": "rlm-task-completed",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/task-completed.ps1",
+            "timeout": 15000
+          }
+        ]
       }
     ],
     "BeforeAgent": [
@@ -84,6 +101,12 @@
             "type": "command",
             "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/agent-log.ps1",
             "timeout": 5000
+          },
+          {
+            "name": "rlm-after-agent",
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .gemini/hooks/after-agent.ps1",
+            "timeout": 10000
           }
         ]
       }

@@ -122,7 +122,47 @@ try {
         $contextLines += "- **Sandbox Skill**: sandbox/SKILL.md"
     }
 
-    $contextLines -join "`n" | Set-Content -Path $contextFile -NoNewline
+    # --- State Health Check ---
+    $healthLib = Join-Path $PSScriptRoot "lib" "monitor-state-health.ps1"
+    if (Test-Path $healthLib) {
+        . $healthLib
+        $healthResult = Test-StateHealth -ProjectDir $cwd
+        $contextLines += ""
+        $contextLines += "## State Health"
+        $contextLines += "- **Status**: $($healthResult.status)"
+        $contextLines += "- **Last Check**: $($healthResult.checkedAt)"
+        if ($healthResult.issues.Count -gt 0) {
+            $contextLines += "- **Issues**: $($healthResult.issues.Count)"
+            foreach ($issue in $healthResult.issues) {
+                $contextLines += "  - $issue"
+            }
+        }
+    }
+
+    # Write session-specific context file for isolation
+    $sessionContextDir = Join-Path $cwd "RLM" "progress" ".session-contexts"
+    if (-not (Test-Path $sessionContextDir)) {
+        New-Item -ItemType Directory -Force -Path $sessionContextDir | Out-Null
+    }
+
+    $content = $contextLines -join "`n"
+
+    # Use atomic write if library available
+    $atomicLib = Join-Path $PSScriptRoot "lib" "atomic-write.ps1"
+    if (Test-Path $atomicLib) {
+        . $atomicLib
+        if ($sessionId) {
+            $sessionContextFile = Join-Path $sessionContextDir "session-$sessionId.md"
+            Write-AtomicFile -FilePath $sessionContextFile -Content $content | Out-Null
+        }
+        Write-AtomicFile -FilePath $contextFile -Content $content | Out-Null
+    } else {
+        if ($sessionId) {
+            $sessionContextFile = Join-Path $sessionContextDir "session-$sessionId.md"
+            $content | Set-Content -Path $sessionContextFile -NoNewline
+        }
+        $content | Set-Content -Path $contextFile -NoNewline
+    }
 
     exit 0
 } catch {

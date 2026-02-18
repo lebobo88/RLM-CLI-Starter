@@ -1,5 +1,11 @@
 ---
 description: "Phase 5: Break feature specifications into fine-grained implementation tasks (RLM Method v2.7)"
+model: sonnet
+context:
+  - "!ls RLM/specs/features"
+  - "!cat RLM/progress/checkpoint.json"
+skills:
+  - spec-writing
 ---
 
 # RLM Tasks — Phase 5: Task Breakdown

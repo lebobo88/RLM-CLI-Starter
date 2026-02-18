@@ -6,9 +6,10 @@ This workspace follows the **RLM (Research, Lead, Manage) Method** — a 9-phase
 ### Workspace Context
 - **Type**: Starter kit for new app development using RLM Method
 - **RLM Artifacts**: `RLM/` (prompts, templates, specs, tasks, progress)
-- **Custom Agents**: `.github/agents/` (15 pipeline-aligned agents)
+- **Custom Agents**: `.github/agents/` (23 pipeline-aligned agents)
 - **Hooks**: `.github/hooks/` (session lifecycle automation)
-- **Skills**: `.github/skills/` (on-demand pipeline knowledge)
+- **Hook Libraries**: `.github/hooks/scripts/lib/` (4 shared libraries)
+- **Skills**: `.github/skills/` (4 on-demand pipeline knowledge)
 
 ## Using RLM with Copilot CLI
 
@@ -59,8 +60,16 @@ For detailed integration guidance, see `RLM/docs/COPILOT-MEMORY.md`.
 | Agent | Purpose |
 |-------|---------|
 | @rlm-orchestrator | Full pipeline automation (all 9 phases) |
+| @rlm-implement-all | Batch TDD implementation (all tasks) |
+| @rlm-fix-bug | Root-cause analysis and structured bug fixing |
+| @rlm-prime | Pre-load feature/task context for complex sessions |
 | @rlm-resume | Resume interrupted sessions |
 | @rlm-debug | Diagnose and repair RLM state |
+| @rlm-new-agent | Create new agents across all CLI platforms |
+| @rlm-sandbox | Manage E2B cloud sandboxes for isolated execution |
+| @rlm-team | Orchestrate agent teams for parallel phase execution |
+| @rlm-observe | Generate observability reports for multi-agent workflows |
+| @gemini-analyzer | Large-scale codebase analysis (1M+ tokens via Gemini CLI) |
 
 ## RLM Artifact Structure
 

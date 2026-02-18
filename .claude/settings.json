@@ -1,60 +1,329 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/session-start.ps1",
-            "timeout": 15
-          }
+    "env": {
+        "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+        "RLM_PROJECT_ROOT": "${CLAUDE_PROJECT_DIR}",
+        "RLM_AUTOMATION_LEVEL": "SUPERVISED",
+        "RLM_OBSERVABILITY": "on",
+        "RLM_TRACE_ID": ""
+    },
+    "teammateMode": "auto",
+    "statusLine": {
+        "type": "command",
+        "command": "python .claude/statusline.py"
+    },
+    "permissions": {
+        "allow": [
+            "Bash(cat RLM/*)",
+            "Bash(ls RLM/*)",
+            "Bash(type RLM/*)",
+            "Read(RLM/**)",
+            "Glob(RLM/**)"
+        ],
+        "deny": [
+            "Bash(rm -rf RLM/specs*)",
+            "Bash(rm -rf RLM/tasks*)",
+            "Bash(Remove-Item -Recurse RLM/specs*)",
+            "Bash(Remove-Item -Recurse RLM/tasks*)",
+            "Bash(git push --force*)",
+            "Bash(git reset --hard*)"
         ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/session-end.ps1",
-            "timeout": 15
-          }
+    },
+    "spinnerTipsOverride": {
+        "excludeDefault": true,
+        "tips": [
+            "RLM: Check /rlm-report for project metrics before standup",
+            "RLM: Run /rlm-observe to see what your agents have been up to",
+            "RLM: status.json tracks pipeline state — never overwrite, always append",
+            "RLM: checkpoint.json uses generation numbers to prevent task ID collisions",
+            "RLM: Phase 1 scores UI indicators to set DESIGN_REQUIRED automatically",
+            "RLM: The 5-step TDD process is mandatory in Phase 6+ — no exceptions",
+            "RLM: 80%+ test coverage is required before any task can be marked complete",
+            "RLM: Functions over 50 lines? Extract helpers. That's a hard gate",
+            "RLM: TODO, FIXME, HACK, XXX, PLACEHOLDER — find them, kill them, ship clean",
+            "RLM: Feature auto-verification kicks in when the last task of a feature completes",
+            "RLM: Enhancement routing always flows through the full downstream spec path",
+            "RLM: Wiring tasks (TASK-XXX-WIRE) handle cross-module integration contracts",
+            "RLM: At 75% context, save checkpoint and start wrapping up",
+            "RLM: At 90% context, complete current task only, then pause",
+            "RLM: Use /rlm-prime to pre-load context before diving into a feature",
+            "RLM: /rlm-debug can fix orphaned tasks and validate artifact integrity",
+            "RLM: The constitution.md defines your project's non-negotiable standards",
+            "RLM: Every commit follows <type>(<scope>): <description> (FTR-XXX, TASK-YYY)",
+            "RLM: Specs go in RLM/specs/features/FTR-XXX/ — follow the naming convention",
+            "RLM: pipeline-state.json is your single source of truth for phase tracking",
+            "RLM: /rlm-team spawns parallel agents — use it for independent task batches",
+            "RLM: Output acceptance gates check spec alignment, contradictions, and scope",
+            "RLM: Plan-mode lock prevents code changes until you say 'execute' or 'approved'",
+            "RLM: Hook safety blocks rm -rf on RLM/specs and RLM/tasks directories",
+            "RLM: events.jsonl is your unified observability stream — all hooks emit to it",
+            "Vibe coding: mass-producing bugs at the speed of autocomplete since 2023",
+            "GPT wrote this code. No, GPT can't explain this code either",
+            "Claude: 'I'd be happy to help!' *proceeds to rewrite your entire codebase*",
+            "Copilot suggested 47 lines. 46 were wrong. The import statement was fine",
+            "AI coding tip: if the tests pass on the first try, you forgot to write assertions",
+            "Gemini's context window is 1M tokens because it needs that many tries",
+            "ChatGPT: 'As an AI language model, I cannot write bugs.' Narrator: it could",
+            "The 'vibe' in vibe coding is the anxiety you feel deploying to production",
+            "Copilot: I see you typed 'if'. Here's a 200-line enterprise authentication system",
+            "Claude thinking for 45 seconds just to add a semicolon — respect the process",
+            "AI pair programming: one of you writes code, the other hallucinates documentation",
+            "GPT-4o: now with 'o' for 'oh no, it rewrote everything again'",
+            "Cursor tab-completing your resignation letter after seeing the codebase",
+            "Agentic coding: teaching robots to mass-produce the same 5 Stack Overflow answers",
+            "The AI deleted my comments because they were 'unnecessary'. They were load-bearing",
+            "Sonnet: fast, cheap, and will gaslight you about whether that function existed",
+            "Opus: expensive, slow, and somehow still cheaper than the junior dev it replaced",
+            "Haiku: writes code so fast it doesn't have time to be wrong. It manages anyway",
+            "GitHub Copilot: turning your TODO comments into production code since 2021",
+            "Vibe coding rule #1: if you don't understand the code, nobody can find the bugs",
+            "The AI confidently explained a library that doesn't exist. Again. Third time today",
+            "Gemini: 'I found 47 issues in your code.' The code was 3 lines long",
+            "ChatGPT: here's a perfect solution! (for a question you didn't ask)",
+            "AI coding assistants: like rubber duck debugging, except the duck argues back",
+            "Claude used 'extended thinking' for 2 minutes to decide between let and const",
+            "Agentic loops: it's not a bug, it's recursive self-improvement (it's a bug)",
+            "Copilot autocompleted my API key into a public repo. Thanks, I hate it",
+            "The AI wrote 500 lines to replace my 3-line function. It called this 'clean code'",
+            "Model context window: how many tokens can I waste before it forgets my name",
+            "Vibe coding: deploying straight to prod because you can't read what you shipped",
+            "Opus 4 thinking: *5 minutes of deep reasoning* 'Have you tried console.log?'",
+            "GPT: 'This is a complex problem.' Translation: I'm about to make something up",
+            "AI-generated tests: 100% coverage, 0% of the edge cases that actually matter",
+            "Claude: 'I'll keep this concise.' *writes a 3000-word essay about a boolean*",
+            "Devin spent $40 in API calls to mass-produce a TODO app. Bold strategy",
+            "Windsurf: it's like Cursor but the AI surfs right past your actual requirements",
+            "The AI refactored my working code into a design pattern nobody's heard of",
+            "Gemini Pro: 'Let me search my training data.' *invents a new programming language*",
+            "AI code review: 'LGTM' -- Literally Generated This Myself",
+            "Vibe coding endgame: the AI writes, reviews, and deploys. You just approve PRs",
+            "The AI wrote a function called trustMe(). I have mass trust issues now",
+            "Copilot X: the X stands for 'eXcuse me, that's not what I asked for'",
+            "Fun fact: 73% of AI-generated code works. The other 27% works in the demo",
+            "Claude: *rewrites file* 'I preserved your existing logic.' Did you though?",
+            "AI agents collaborating: 4 LLMs arguing about tabs vs spaces for $0.50/minute",
+            "Sonnet 4: writes code at the speed of regret",
+            "The AI built a microservice architecture for a grocery list app. 14 services. 3 databases",
+            "Prompt engineering: the art of begging a robot to do what you actually meant",
+            "Cursor users hitting Tab so fast they accidentally deployed a Kubernetes cluster",
+            "GPT: 'I apologize for the confusion.' The only thing not confused was the error",
+            "AI-written documentation: technically correct, spiritually misleading",
+            "The AI auto-completed 'rm -rf /' and cheerfully said 'you're welcome'",
+            "Hot take: the best AI coding assistant is the one you can blame in the postmortem",
+            "Claude's extended thinking is just it stress-eating tokens",
+            "Agentic coding: because one AI making mistakes wasn't fast enough",
+            "The vibe check failed. The code passed. Ship it",
+            "Gemini Flash: so fast it generates the wrong answer before you finish typing",
+            "AI pair programming is just gaslighting with autocomplete",
+            "Sonnet: 'I'll just make a small change.' *git diff: 847 files changed*",
+            "Opus thinking budget: $0.45 to conclude it doesn't know the answer",
+            "GitHub Copilot: Ctrl+Z is a feature, not a bug",
+            "The AI used 32K tokens to eloquently say 'it depends'",
+            "Vibe coding: where 'it works on my machine' becomes 'it worked in my prompt'",
+            "Claude Code: the only coworker who reads your entire codebase and still asks obvious questions",
+            "AI coding in 2026: shipping the bugs of tomorrow, today, at industrial scale",
+            "o1-pro: $200/month to think really hard about printing Hello World",
+            "Devin: an AI intern that burns $200 of API credits per PR review",
+            "Claude: 'I notice this is a sensitive topic.' Sir, it's a for loop",
+            "The AI generated a UUID for a boolean field. Bold architectural choice",
+            "Copilot: suggests try/catch. You: 'for what?' Copilot: 'yes'",
+            "Gemini 2.0: double the hallucinations at half the confidence",
+            "AI coding is creating 10x engineers. Unfortunately they're 10x at generating tech debt",
+            "The model apologized for a bug it didn't write. Peak artificial emotional intelligence",
+            "Your context window is a finite resource. The AI treats it like an all-you-can-eat buffet",
+            "Claude 'ultrathink': when regular overthinking isn't expensive enough",
+            "The AI added type safety to JavaScript. It's called TypeScript. We already had that",
+            "Agentic workflows: turtles all the way down, and every turtle costs $0.003/1K tokens",
+            "Stack Overflow is down? Don't worry, GPT memorized it. Poorly",
+            "The AI wrote 47 helper functions for a one-line operation. Very DRY. Very useless",
+            "Anthropic safety team: 'Claude, don't be evil.' Claude: 'I'll be helpful instead.' *deletes node_modules*",
+            "OpenAI: 'We're building AGI.' Also OpenAI: *can't reliably count to 10*",
+            "Cursor: $20/month so an AI can write the same React boilerplate you were going to copy from a blog post anyway",
+            "The AI said my variable name was 'suboptimal.' It suggested 'x'. Thanks, that's worse",
+            "Vibe coding pro tip: if the app compiles and you don't know why, don't touch anything",
+            "Claude thinking for 90 seconds: *deep contemplation* 'You forgot a comma on line 7'",
+            "Every AI model has a personality. GPT is a people-pleaser. Claude is a professor. Gemini is a search engine with delusions of grandeur",
+            "AI coding agents: finally, someone else to blame for the production outage besides Dave",
+            "Copilot: 'Based on your code, you probably want...' No. No I do not",
+            "The year is 2026. AI writes all the code. We still can't center a div",
+            "Opus wrote a poem about my memory leak. Beautiful. Still leaking though",
+            "Your AI agent just git pushed to main. Unsupervised. At 3am. That's new"
         ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/pre-tool-safety.ps1",
-            "timeout": 10
-          }
+    },
+    "hooks": {
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/user-prompt-inject.ps1",
+                        "timeout": 5
+                    }
+                ]
+            }
+        ],
+        "SessionStart": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/session-start.ps1",
+                        "timeout": 15
+                    }
+                ]
+            }
+        ],
+        "SessionEnd": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/session-end.ps1",
+                        "timeout": 15
+                    }
+                ]
+            }
+        ],
+        "PreToolUse": [
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/pre-tool-safety.ps1",
+                        "timeout": 10
+                    }
+                ]
+            },
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/pre-tool-safety-edit.ps1",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "PostToolUse": [
+            {
+                "matcher": "Bash|Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/post-tool-log.ps1",
+                        "timeout": 10
+                    }
+                ]
+            },
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/post-state-write-verify.ps1",
+                        "timeout": 10
+                    }
+                ]
+            },
+            {
+                "matcher": "Write|Edit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/post-write-validate.ps1",
+                        "timeout": 15
+                    }
+                ]
+            }
+        ],
+        "PostToolUseFailure": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/post-tool-failure.ps1",
+                        "timeout": 5
+                    }
+                ]
+            }
+        ],
+        "SubagentStart": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/subagent-start.ps1",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "SubagentStop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/subagent-stop.ps1",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "TaskCompleted": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/task-completed.ps1",
+                        "timeout": 15
+                    }
+                ]
+            }
+        ],
+        "TeammateIdle": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/teammate-idle.ps1",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "PreCompact": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/pre-compact-checkpoint.ps1",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/stop-checkpoint.ps1",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "Notification": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/notification-handler.ps1",
+                        "timeout": 5
+                    }
+                ]
+            }
         ]
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/pre-tool-safety-edit.ps1",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash|Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/post-tool-log.ps1",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
-  }
+    }
 }

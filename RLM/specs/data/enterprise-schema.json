@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Enterprise OPA Unified Schema",
+  "description": "Standardized data structure for all Enterprise Automation Hub departmental outputs.",
+  "type": "object",
+  "required": ["metadata", "payload"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["pipeline_id", "domain", "timestamp", "confidentiality"],
+      "properties": {
+        "pipeline_id": { "type": "string" },
+        "domain": { "enum": ["FINANCE", "LEGAL", "MARKETING", "HR", "OPS", "IT"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "source_system": { "type": "string" },
+        "confidentiality": { "enum": ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "PII"] },
+        "governor_audit_status": { "enum": ["PENDING", "PASSED", "FLAGGED"] }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "description": "Department-specific data structures defined in sub-schemas."
+    },
+    "audit_trail": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": { "type": "string" },
+          "agent": { "type": "string" },
+          "action": { "type": "string" },
+          "output_hash": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -97,4 +97,12 @@ fi
   fi
 } > "$CONTEXT_FILE"
 
+# Write session-specific context file for isolation
+SESSION_CONTEXT_DIR="$CWD/RLM/progress/.session-contexts"
+mkdir -p "$SESSION_CONTEXT_DIR"
+
+if [ -n "$SESSION_ID" ]; then
+  cp "$CONTEXT_FILE" "$SESSION_CONTEXT_DIR/session-$SESSION_ID.md"
+fi
+
 exit 0

@@ -1,6 +1,9 @@
 ---
 description: "Manage isolated sandbox environments (E2B or Docker) for code execution and testing (RLM Method v2.7)"
 argument-hint: "<create|exec|host|test|browse|download|kill> [options]"
+model: sonnet
+context:
+  - "!cat RLM/progress/config.json"
 ---
 
 # RLM Sandbox Command

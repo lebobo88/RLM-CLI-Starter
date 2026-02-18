@@ -28,6 +28,38 @@ try {
     $entry = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss'),$sessionId,$toolName,post_tool_use"
     Add-Content -Path $logFile -Value $entry
 
+    # Enhanced JSONL logging with agent tracking
+    $observabilityOff = ($env:RLM_OBSERVABILITY -eq "off")
+    if (-not $observabilityOff) {
+        $jsonlFile = Join-Path $logDir "tool-usage.jsonl"
+        $now = Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ'
+
+        $agentId = if ($input.PSObject.Properties['agent_name']) { $input.agent_name } else { "" }
+
+        # Extract file path from tool input if available
+        $filePath = ""
+        if ($input.tool_input.PSObject.Properties['file_path']) {
+            $filePath = $input.tool_input.file_path
+        } elseif ($input.tool_input.PSObject.Properties['command']) {
+            $filePath = "[bash]"
+        }
+
+        $jsonEntry = @{
+            timestamp = $now
+            sessionId = $sessionId
+            agentId = $agentId
+            tool = $toolName
+            event = "post_tool_use"
+            filePath = $filePath
+        } | ConvertTo-Json -Compress
+        Add-Content -Path $jsonlFile -Value $jsonEntry
+    }
+
+    # Return additionalContext with event summary
+    @{
+        additionalContext = "Logged: $toolName on $(if ($filePath) { $filePath } else { 'N/A' })"
+    } | ConvertTo-Json -Compress
+
     exit 0
 } catch {
     exit 0

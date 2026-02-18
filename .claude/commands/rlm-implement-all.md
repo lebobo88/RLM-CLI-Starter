@@ -1,5 +1,11 @@
 ---
 description: "Phase 6: TDD implementation of all active tasks in dependency order (RLM Method v2.7)"
+model: sonnet
+context:
+  - "!ls RLM/tasks/active"
+  - "!cat RLM/progress/checkpoint.json"
+skills:
+  - tdd-workflow
 ---
 
 # RLM Implement All — Phase 6: Batch Implementation
@@ -17,6 +23,17 @@ Before starting any implementation:
 1. Check if the session is in `[[PLAN]]` mode or flagged `plan_only`
 2. If yes: **ABORT** implementation with message: "Cannot implement in plan-only mode. Request explicit user approval to proceed with implementation."
 3. If no: Continue with batch implementation
+
+## Team Mode Detection
+
+After plan-mode check, before starting sequential implementation:
+1. Read `RLM/progress/config.json` — check if `team.enabled` is `true`
+2. Count independent (unblocked) tasks in `RLM/tasks/active/`
+3. If team mode enabled AND independent tasks >= 3:
+   - Delegate to `/rlm-team implement` for parallel execution
+   - The team command handles all coordination and quality gates
+   - This command exits after delegation
+4. Otherwise: Continue with sequential implementation below
 
 ## Before You Start
 

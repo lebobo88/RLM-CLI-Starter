@@ -1,0 +1,28 @@
+name: Hook Security Tests
+on:
+  push:
+    paths:
+      - '.claude/hooks/**'
+      - '.gemini/hooks/**'
+      - '.github/hooks/**'
+      - 'tests/hooks/**'
+  pull_request:
+    paths:
+      - '.claude/hooks/**'
+      - '.gemini/hooks/**'
+      - '.github/hooks/**'
+      - 'tests/hooks/**'
+
+jobs:
+  test-hooks:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        platform: [claude, gemini, github]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run hook security tests
+        shell: pwsh
+        run: pwsh tests/hooks/test-runner.ps1 -Platform ${{ matrix.platform }}

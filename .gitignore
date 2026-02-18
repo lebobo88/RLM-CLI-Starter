@@ -79,10 +79,22 @@ ehthumbs.db
 !RLM/progress/logs/**
 
 # ---------------------------
+# Playwright
+# ---------------------------
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# ---------------------------
 # Sandbox state (ephemeral, not tracked)
 # ---------------------------
 sandbox/.sandbox-state.json
 sandbox/.venv/
+
+# ---------------------------
+# Session contexts (ephemeral, per-session)
+# ---------------------------
+RLM/progress/.session-contexts/
 
 # ---------------------------
 # Temp / Misc
@@ -92,6 +104,7 @@ nul
 *.tmp
 *.temp
 *.bak
+*.lock
 *.orig
 .cache/
 tmp/
@@ -100,6 +113,13 @@ tmp/
 # Keep files (always track)
 # ---------------------------
 !.gitkeep
+
+# ---------------------------
+# AuthHub SDK (vendored)
+# ---------------------------
+# node_modules not committed; dist IS committed (users can use without building)
+packages/authhub-sdk/node_modules/
+!packages/authhub-sdk/dist/
 
 # ---------------------------
 # Notes

@@ -1,6 +1,12 @@
 ---
 description: "Phase 6: TDD implementation of a single task with 5-step process (RLM Method v2.7)"
 argument-hint: "<TASK-XXX or leave blank for next ready task>"
+model: sonnet
+context:
+  - "!cat RLM/progress/.current-context.md"
+  - "!ls RLM/tasks/active"
+skills:
+  - tdd-workflow
 ---
 
 # RLM Implement — Phase 6: Implementation (Single Task)

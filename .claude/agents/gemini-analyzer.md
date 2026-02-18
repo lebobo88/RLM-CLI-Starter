@@ -1,8 +1,17 @@
 ---
 name: gemini-analyzer
 description: "Expert wrapper for Gemini CLI. Use this to analyze the entire codebase for patterns, architecture, or deep searches that exceed Claude's immediate context. Perfect for Phase 1 (Discovery), Phase 3 (Specs), and Phase 7 (Quality)."
+model: sonnet
 tools:
   - Bash
+maxTurns: 10
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "powershell -ExecutionPolicy Bypass -File .claude/hooks/agents/check-gemini-installed.ps1"
+          timeout: 5
 ---
 
 # Gemini Analyzer Subagent (RLM Edition)

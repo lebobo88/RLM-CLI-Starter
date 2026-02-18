@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SEC-Agent Financial Model",
+  "type": "object",
+  "required": ["company_info", "kpis", "financial_statements", "metadata"],
+  "properties": {
+    "company_info": {
+      "type": "object",
+      "required": ["name", "cik", "ticker", "fiscal_year_end"],
+      "properties": {
+        "name": { "type": "string" },
+        "cik": { "type": "string", "pattern": "^[0-9]{10}$" },
+        "ticker": { "type": "string" },
+        "fiscal_year_end": { "type": "string" }
+      }
+    },
+    "kpis": {
+      "type": "object",
+      "required": ["revenue_growth", "net_profit_margin", "debt_to_equity", "operating_cash_flow", "roe"],
+      "properties": {
+        "revenue_growth": { "type": "number" },
+        "net_profit_margin": { "type": "number" },
+        "debt_to_equity": { "type": "number" },
+        "operating_cash_flow": { "type": "number" },
+        "roe": { "type": "number" }
+      }
+    },
+    "financial_statements": {
+      "type": "object",
+      "properties": {
+        "income_statement": { "type": "object" },
+        "balance_sheet": { "type": "object" },
+        "cash_flow": { "type": "object" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["source_url", "extraction_timestamp", "confidence_score"],
+      "properties": {
+        "source_url": { "type": "string", "format": "uri" },
+        "extraction_timestamp": { "type": "string", "format": "date-time" },
+        "confidence_score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "anomalies": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

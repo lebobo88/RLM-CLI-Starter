@@ -1,5 +1,10 @@
 ---
 description: "Phase 2: Generate design system, tokens, and component library (RLM Method v2.7)"
+model: opus
+context:
+  - "!cat RLM/specs/PRD.md"
+skills:
+  - spec-writing
 ---
 
 # RLM Design — Phase 2: Design System

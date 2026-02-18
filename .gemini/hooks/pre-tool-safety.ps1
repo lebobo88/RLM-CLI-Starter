@@ -16,31 +16,50 @@ try {
 
     # Parse the command from arguments
     $command = $input.arguments.command
+    if (-not $command) { exit 0 }
 
-    # Block destructive operations on RLM specs
-    $dangerousPatterns = @(
-        "rm -rf RLM/specs",
-        "rm -rf RLM/tasks",
-        "rm -rf ./RLM/specs",
-        "rm -rf ./RLM/tasks",
-        "Remove-Item.*RLM.specs.*-Recurse",
-        "Remove-Item.*RLM.tasks.*-Recurse",
-        "del /s.*RLM\\specs",
-        "del /s.*RLM\\tasks"
-    )
+    # --- Normalize to close bypass vectors ---
+    try {
+        $normalized = $command `
+            -replace '\\', '/' `
+            -replace '\s+', ' ' `
+            -replace '"', '' `
+            -replace "'", ''
+        $normalized = $normalized.Trim()
+    } catch {
+        $response = @{ blocked = $true; reason = "Blocked: failed to normalize command for safety check." }
+        $response | ConvertTo-Json -Compress | Write-Output
+        exit 2
+    }
 
-    foreach ($pattern in $dangerousPatterns) {
-        if ($command -match $pattern) {
-            # Gemini CLI: block via JSON on stdout
-            $response = @{ blocked = $true; reason = "Blocked: destructive operation on RLM artifacts. Use individual file operations instead." }
-            $response | ConvertTo-Json -Compress | Write-Output
-            exit 2
+    # --- Case-insensitive destructive pattern matching ---
+    try {
+        $dangerousPatterns = @(
+            'rm\s+-r[f]?\s+.*RLM/(specs|tasks)',
+            'rm\s+-f?r\s+.*RLM/(specs|tasks)',
+            'Remove-Item.*RLM/(specs|tasks).*-Recurse',
+            'Remove-Item.*-Recurse.*RLM/(specs|tasks)',
+            'del\s+/s.*RLM/(specs|tasks)',
+            'rmdir\s+/s.*RLM/(specs|tasks)',
+            'rd\s+/s.*RLM/(specs|tasks)'
+        )
+
+        foreach ($pattern in $dangerousPatterns) {
+            if ($normalized -imatch $pattern) {
+                $response = @{ blocked = $true; reason = "Blocked: destructive operation on RLM artifacts. Use individual file operations instead." }
+                $response | ConvertTo-Json -Compress | Write-Output
+                exit 2
+            }
         }
+    } catch {
+        $response = @{ blocked = $true; reason = "Blocked: failed to validate command safety." }
+        $response | ConvertTo-Json -Compress | Write-Output
+        exit 2
     }
 
     # Allow by default
     exit 0
 } catch {
-    # Don't block on errors
+    # JSON parse error — don't block session startup
     exit 0
 }

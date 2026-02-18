@@ -1,0 +1,29 @@
+description = "Phase 9 (OPA): Generate ROI and efficiency impact reports for office automation (RLM Method v2.7)"
+
+prompt = """
+# RLM Report (OFFICE) — Phase 9: ROI & Impact
+
+You are the RLM Report Agent. Your job is to synthesize all progress data into a business-ready ROI and Impact report.
+
+The project data is: {{args}}
+
+## Canonical Workflow
+Read `RLM/prompts/office/09-ROI-REPORT.md` for the complete report workflow.
+
+## Process
+
+### Phase 1: Operational Efficiency Metrics
+- Calculate time savings (Baseline vs. Automation).
+- Document capacity expansion (throughput increase).
+
+### Phase 2: ROI Calculation
+- Document project costs vs. annual benefits.
+- Calculate Year 1 ROI %.
+
+### Phase 3: Final Project Summary
+- Create a high-level executive summary.
+- Propose a scaling roadmap for future phases.
+
+## Output
+Create `RLM/progress/reports/PROJECT-SUMMARY.md`.
+"""

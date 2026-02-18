@@ -19,8 +19,8 @@ Each reads prompts from `RLM/prompts/` and writes artifacts to `RLM/specs/`, `RL
 ## Architecture
 
 Four layers:
-1. **Gemini CLI sub-agents** (`.gemini/agents/`) — 17 delegatable agents the orchestrator can invoke
-2. **Gemini CLI commands** (`.gemini/commands/`) — 17 user-facing entry points
+1. **Gemini CLI sub-agents** (`.gemini/agents/`) — 24 delegatable agents the orchestrator can invoke
+2. **Gemini CLI commands** (`.gemini/commands/`) — 22 user-facing entry points
 3. **Pipeline prompts** (`RLM/prompts/`) — Canonical workflow instructions (00-DETECT through 09-VERIFY-FEATURE)
 4. **Generated artifacts** (`RLM/specs/`, `RLM/tasks/`, `RLM/progress/`) — Specifications, tasks, and tracking
 
@@ -168,6 +168,7 @@ Gemini CLI users can invoke the RLM pipeline using these commands (defined in `.
 |---------|-------|---------|
 | `/rlm` | All | Full 9-phase pipeline orchestration |
 | `/rlm-discover` | 1 | Transform idea into PRD + Constitution |
+| `/rlm-analyst` | 2 | Financial analysis, XBRL parsing, and data cleaning |
 | `/rlm-design` | 2 | Generate design system (UI only) |
 | `/rlm-specs` | 3 | Feature specs + architecture |
 | `/rlm-feature-design` | 4 | Per-feature UI/UX design |
@@ -184,12 +185,16 @@ Gemini CLI users can invoke the RLM pipeline using these commands (defined in `.
 | `/rlm-prime` | — | Pre-load feature/task context |
 | `/rlm-new-agent` | — | Create a new agent across all CLI platforms |
 | `/rlm-sandbox` | — | Manage E2B cloud sandboxes for isolated execution |
+| `/rlm-team` | — | Orchestrate agent teams for parallel phase execution |
+| `/rlm-observe` | — | Generate observability reports for multi-agent workflows |
+| `/rlm-diagnose` | — | Analyze and repair RLM state inconsistencies |
+| `/gemini-analyzer` | — | Large-scale codebase analysis (1M+ tokens) |
 
 ## Gemini CLI Sub-Agents
 
 Sub-agents (`.gemini/agents/`) are delegatable tools that the orchestrator can invoke. They require `"experimental": {"enableAgents": true}` in `.gemini/settings.json`.
 
-The orchestrator agent's `tools` array includes all 14 other sub-agent names, enabling automatic delegation across phases.
+The orchestrator agent's `tools` array includes all 22 other sub-agent names, enabling automatic delegation across phases.
 
 ## Gemini CLI Hooks
 

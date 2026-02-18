@@ -1,20 +1,20 @@
 {
-  "pipeline_id": "PIPELINE-2026-02-14-001",
-  "started_at": "2026-02-14T00:00:00Z",
-  "automation_level": "AUTO",
-  "current_phase": 1,
-  "design_required": null,
+  "pipeline_id": "PIPELINE-ENT-HUB-2026-002",
+  "started_at": "2026-02-16T12:30:00Z",
+  "automation_level": "auto",
+  "current_phase": 5,
+  "project_type": "TYPE_OFFICE",
+  "design_required": false,
+  "status": "active",
   "phases": {
-    "1_discovery": { "status": "completed" },
-    "2_design": { "status": "skipped" },
-    "3_specs": { "status": "completed" },
-    "4_feature_design": { "status": "skipped" },
-    "5_tasks": { "status": "completed" },
-    "6_implementation": { "status": "pending" },
+    "1_discovery": { "status": "completed", "completed_at": "2026-02-16T12:45:00Z" },
+    "2_analyst": { "status": "completed", "completed_at": "2026-02-16T12:50:00Z" },
+    "3_specs": { "status": "completed", "completed_at": "2026-02-16T13:10:00Z" },
+    "4_scribe": { "status": "skipped", "reason": "Non-UI project (design_required=false)", "skipped_at": "2026-02-18T02:19:55Z" },
+    "5_tasks": { "status": "active" },
+    "6_integrator": { "status": "pending" },
     "7_quality": { "status": "pending" },
     "8_verification": { "status": "pending" },
     "9_report": { "status": "pending" }
-  },
-  "token_usage": 0,
-  "last_checkpoint": null
+  }
 }

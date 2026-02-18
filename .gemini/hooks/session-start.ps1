@@ -122,7 +122,21 @@ try {
         $contextLines += "- **Sandbox Skill**: sandbox/SKILL.md"
     }
 
-    $contextLines -join "`n" | Set-Content -Path $contextFile -NoNewline
+    # Write session-specific context file for isolation
+    $sessionContextDir = Join-Path $cwd "RLM" "progress" ".session-contexts"
+    if (-not (Test-Path $sessionContextDir)) {
+        New-Item -ItemType Directory -Force -Path $sessionContextDir | Out-Null
+    }
+
+    $content = $contextLines -join "`n"
+
+    if ($sessionId) {
+        $sessionContextFile = Join-Path $sessionContextDir "session-$sessionId.md"
+        $content | Set-Content -Path $sessionContextFile -NoNewline
+    }
+
+    # Backward compat: .current-context.md points to last active session
+    $content | Set-Content -Path $contextFile -NoNewline
 
     exit 0
 } catch {

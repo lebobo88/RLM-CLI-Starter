@@ -1,6 +1,11 @@
 ---
 description: "Phase 1: Transform ideas into PRD and constitution via structured discovery (RLM Method v2.7)"
 argument-hint: "<your project idea>"
+model: opus
+context:
+  - "!cat RLM/progress/config.json"
+skills:
+  - spec-writing
 ---
 
 # RLM Discover — Phase 1: Discovery

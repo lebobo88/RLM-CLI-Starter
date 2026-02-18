@@ -26,6 +26,13 @@
         "bash": "bash .github/hooks/scripts/pre-tool-safety.sh",
         "cwd": ".",
         "timeoutSec": 10
+      },
+      {
+        "type": "command",
+        "powershell": ".github/hooks/scripts/pre-tool-safety-edit.ps1",
+        "bash": "bash .github/hooks/scripts/pre-tool-safety-edit.sh",
+        "cwd": ".",
+        "timeoutSec": 10
       }
     ],
     "copilot:tool.post": [
@@ -35,6 +42,13 @@
         "bash": "bash .github/hooks/scripts/post-tool-log.sh",
         "cwd": ".",
         "timeoutSec": 10
+      },
+      {
+        "type": "command",
+        "powershell": ".github/hooks/scripts/post-tool-agent-spawn.ps1",
+        "bash": "bash .github/hooks/scripts/post-tool-agent-spawn.sh",
+        "cwd": ".",
+        "timeoutSec": 5
       }
     ],
     "copilot:prompt.pre": [

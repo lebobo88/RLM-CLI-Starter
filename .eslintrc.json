@@ -1,4 +1,0 @@
-{
-  "extends": "oclif-typescript",
-  "root": true
-}

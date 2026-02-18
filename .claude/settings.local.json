@@ -7,7 +7,27 @@
       "WebFetch(domain:geminicli.com)",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(docker info:*)"
+      "Bash(docker info:*)",
+      "Bash(test:*)",
+      "Bash(echo:*)",
+      "WebFetch(domain:gist.github.com)",
+      "WebFetch(domain:www.youtube.com)",
+      "Bash(\"H:/RLM_Copilot_CLI_Starter/.gemini/hooks/after-agent.sh\":*)",
+      "Bash(chmod:*)",
+      "Bash(\"H:/RLM_Copilot_CLI_Starter/.gemini/hooks/task-completed.sh\":*)",
+      "Bash(python3 -c \"import json; json.load\\(open\\(''.claude/settings.json''\\)\\); print\\(''settings.json: valid JSON''\\)\")",
+      "Bash(python3:*)",
+      "Bash(python3 -c \"import json; json.load\\(open\\(''.gemini/settings.json''\\)\\); print\\(''gemini settings.json: valid JSON''\\)\")",
+      "Bash(python3 -c \"import json; json.load\\(open\\(''.gemini/settings-unix.json''\\)\\); print\\(''gemini settings-unix.json: valid JSON''\\)\")",
+      "Bash(python:*)",
+      "Bash(xargs:*)",
+      "Bash(\"H:/RLM_Copilot_CLI_Starter/.gemini/hooks/lib/agent-tracer.sh\":*)",
+      "Bash(\"H:/RLM_Copilot_CLI_Starter/.gemini/hooks/lib/event-sender.sh\":*)",
+      "Bash(\"H:/RLM_Copilot_CLI_Starter/.github/hooks/scripts/lib/agent-tracer.sh\":*)",
+      "Bash(\"H:/RLM_Copilot_CLI_Starter/.github/hooks/scripts/lib/event-sender.sh\":*)",
+      "Bash(powershell -ExecutionPolicy Bypass -Command \"Get-ChildItem -Path ''H:\\\\RLM_CLI_Starter\\\\.claude\\\\hooks'' -Recurse -File | Select-Object -ExpandProperty FullName\")"
     ]
-  }
+  },
+  "outputStyle": "default",
+  "prefersReducedMotion": true
 }

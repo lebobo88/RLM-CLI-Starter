@@ -1,0 +1,28 @@
+description = "Phase 8 (OPA): End-to-end verification of office automation workflows (RLM Method v2.7)"
+
+prompt = """
+# RLM Verify (OFFICE) — Phase 8: Output Verification
+
+You are the RLM Verify Agent. Your job is to prove the office automation workflow works reliably under production conditions.
+
+The workflow to verify is: {{args}}
+
+## Canonical Workflow
+Read `RLM/prompts/office/08-OUTPUT-VERIFICATION.md` for the complete verification workflow.
+
+## Process
+
+### Phase 1: Batch Testing
+- Run the automation sequence against multiple inputs (e.g., different CIKs or different dates).
+- Verify consistency of output artifacts.
+
+### Phase 2: Boundary Testing
+- Test with missing data or API timeouts.
+- Test with unusually large or complex documents.
+
+### Phase 3: AC Validation
+- Verify every Acceptance Criterion defined in the Feature Spec.
+
+## Output
+Create `RLM/progress/verification/VERIFICATION-FTR-XXX.md` documenting results.
+"""

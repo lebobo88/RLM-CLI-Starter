@@ -18,10 +18,43 @@ if [ "$TOOL_NAME" != "run_shell_command" ]; then
   exit 0
 fi
 
-# Block destructive operations on RLM artifacts
-if echo "$COMMAND" | grep -qE "rm -rf RLM/specs|rm -rf RLM/tasks|rm -rf ./RLM/specs|rm -rf ./RLM/tasks"; then
-  # Gemini CLI: block via JSON on stdout
-  echo '{"blocked":true,"reason":"Blocked: destructive operation on RLM artifacts. Use individual file operations instead."}' >&1
+if [ -z "$COMMAND" ]; then
+  exit 0
+fi
+
+# --- Normalize to close bypass vectors ---
+NORMALIZED=$(echo "$COMMAND" | sed 's|\\|/|g' | tr -s ' ' | tr -d '"' | tr -d "'" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+if [ -z "$NORMALIZED" ]; then
+  echo '{"blocked":true,"reason":"Blocked: failed to normalize command for safety check."}' >&1
+  exit 2
+fi
+
+# --- Case-insensitive destructive pattern matching ---
+BLOCK_MSG='{"blocked":true,"reason":"Blocked: destructive operation on RLM artifacts. Use individual file operations instead."}'
+
+if echo "$NORMALIZED" | grep -iqE "rm\s+-r[f]?\s+.*RLM/(specs|tasks)"; then
+  echo "$BLOCK_MSG" >&1
+  exit 2
+fi
+
+if echo "$NORMALIZED" | grep -iqE "rm\s+-f?r\s+.*RLM/(specs|tasks)"; then
+  echo "$BLOCK_MSG" >&1
+  exit 2
+fi
+
+if echo "$NORMALIZED" | grep -iqE "Remove-Item.*RLM/(specs|tasks).*-Recurse"; then
+  echo "$BLOCK_MSG" >&1
+  exit 2
+fi
+
+if echo "$NORMALIZED" | grep -iqE "Remove-Item.*-Recurse.*RLM/(specs|tasks)"; then
+  echo "$BLOCK_MSG" >&1
+  exit 2
+fi
+
+if echo "$NORMALIZED" | grep -iqE "(del|rmdir|rd)\s+/s.*RLM/(specs|tasks)"; then
+  echo "$BLOCK_MSG" >&1
   exit 2
 fi
 

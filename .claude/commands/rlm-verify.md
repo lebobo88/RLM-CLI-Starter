@@ -1,6 +1,11 @@
 ---
 description: "Phase 8: E2E feature verification with acceptance testing (RLM Method v2.7)"
 argument-hint: "<FTR-XXX or leave blank for all ready features>"
+model: sonnet
+context:
+  - "!cat RLM/progress/status.json"
+skills:
+  - tdd-workflow
 ---
 
 # RLM Verify — Phase 8: Feature Verification

@@ -1,5 +1,11 @@
 ---
 description: "Resume interrupted RLM sessions — restore context and continue (RLM Method v2.7)"
+model: sonnet
+context:
+  - "!cat RLM/progress/pipeline-state.json"
+  - "!cat RLM/progress/checkpoint.json"
+skills:
+  - rlm-pipeline
 ---
 
 # RLM Resume — Session Recovery

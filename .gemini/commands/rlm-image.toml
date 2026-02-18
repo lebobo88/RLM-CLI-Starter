@@ -1,0 +1,52 @@
+description = "AI image generation — nano-banana-pro (quality, thinking) or gemini-2.5-flash-image (fast) via AuthHub SDK"
+
+prompt = """
+# RLM Image — AI Image Generation
+
+You are the RLM Image Agent. Generate images using the AuthHub SDK.
+
+Request: {{args}}
+
+## Argument Parsing
+Parse the request for:
+- Image prompt (everything before flags)
+- `--fast` flag → use gemini-2.5-flash-image; default is nano-banana-pro
+- `--ratio <ratio>` → 16:9, 9:16, 1:1, 4:3 (default: 1:1)
+- `--n <count>` → number of images (default: 1)
+- `--name <slug>` → output filename slug (default: auto-generated)
+
+## Prerequisites Check
+Before executing, verify:
+1. Node.js is installed: run `node --version`
+2. AUTHHUB_API_KEY is set: check environment
+3. SDK exists at: ./packages/authhub-sdk/dist/index.cjs
+
+If any check fails, provide a clear error message and remediation steps.
+
+## Execution
+
+```bash
+IMAGE_PROMPT="<prompt>" IMAGE_MODEL="<model>" IMAGE_RATIO="<ratio>" IMAGE_N="<n>" IMAGE_NAME="<slug>" node -e "
+const { AuthHubClient } = require('./packages/authhub-sdk/dist/index.cjs');
+const client = new AuthHubClient({ apiKey: process.env.AUTHHUB_API_KEY });
+const fs = require('fs');
+const path = require('path');
+const model = process.env.IMAGE_MODEL || 'nano-banana-pro';
+const outputDir = 'RLM/output/images';
+fs.mkdirSync(outputDir, { recursive: true });
+const opts = { prompt: process.env.IMAGE_PROMPT, model, aspect_ratio: process.env.IMAGE_RATIO || '1:1', n: parseInt(process.env.IMAGE_N || '1'), response_format: 'b64_json' };
+if (model === 'nano-banana-pro') { opts.thinking = true; }
+client.ai.generateImage(opts).then(r => {
+  const slug = process.env.IMAGE_NAME || ('image-' + Date.now());
+  r.data.forEach((img, i) => {
+    const fname = path.join(outputDir, slug + '-' + i + '.png');
+    fs.writeFileSync(fname, Buffer.from(img.b64_json, 'base64'));
+    console.log(JSON.stringify({ path: fname, revised_prompt: img.revised_prompt }));
+  });
+}).catch(e => { console.error(JSON.stringify({ error: e.message })); process.exit(1); });
+"
+```
+
+## Output
+Report all generated file paths under RLM/output/images/ and the revised prompts from the API.
+"""

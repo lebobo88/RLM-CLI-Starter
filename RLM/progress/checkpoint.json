@@ -1,8 +1,29 @@
 {
-  "lastTask": "TASK-012",
+  "lastTask": null,
   "lastSession": {
-    "sessionId": "",
-    "reason": "complete",
-    "endedAt": "2026-02-12T16:43:50Z"
-  }
+    "sessionId": "56dadaac-6550-4a95-8e35-8abb33b26a6e",
+    "pipeline_id": "PIPELINE-ENT-HUB-2026-002",
+    "reason": "checkpoint_save",
+    "status": "active",
+    "lastActivity": "2026-02-18T01:52:21Z",
+    "phase": 0,
+    "startedAt": "2026-02-18T01:45:18Z",
+    "endedAt": null
+  },
+  "sessions": [
+    {
+      "sessionId": "",
+      "reason": "factory_reset",
+      "endedAt": "2026-02-15T20:27:00Z"
+    },
+    {
+      "startedAt": "2026-02-18T01:45:18Z",
+      "reason": "checkpoint_save",
+      "pipeline_id": "PIPELINE-ENT-HUB-2026-002",
+      "sessionId": "56dadaac-6550-4a95-8e35-8abb33b26a6e",
+      "phase": 0,
+      "status": "active",
+      "lastActivity": "2026-02-18T01:52:21Z"
+    }
+  ]
 }

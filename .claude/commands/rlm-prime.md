@@ -1,6 +1,9 @@
 ---
 description: "Pre-load feature or task context into the conversation (RLM Method v2.7)"
 argument-hint: "<FTR-XXX or TASK-XXX>"
+model: sonnet
+context:
+  - "!cat RLM/progress/.current-context.md"
 ---
 
 # RLM Prime — Context Priming

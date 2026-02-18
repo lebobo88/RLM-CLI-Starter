@@ -62,6 +62,23 @@
             "timeout": 10000
           }
         ]
+      },
+      {
+        "matcher": "write_file|replace",
+        "hooks": [
+          {
+            "name": "rlm-post-state-write-verify",
+            "type": "command",
+            "command": ".gemini/hooks/post-state-write-verify.sh",
+            "timeout": 10000
+          },
+          {
+            "name": "rlm-task-completed",
+            "type": "command",
+            "command": ".gemini/hooks/task-completed.sh",
+            "timeout": 15000
+          }
+        ]
       }
     ],
     "BeforeAgent": [
@@ -84,6 +101,12 @@
             "type": "command",
             "command": ".gemini/hooks/agent-log.sh",
             "timeout": 5000
+          },
+          {
+            "name": "rlm-after-agent",
+            "type": "command",
+            "command": ".gemini/hooks/after-agent.sh",
+            "timeout": 10000
           }
         ]
       }

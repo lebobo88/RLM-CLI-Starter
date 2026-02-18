@@ -42,6 +42,14 @@ Prompt body goes here. Use `@other-agent` to delegate to other agents.
 ---
 description: "One-line description (RLM Method v2.7)"
 argument-hint: "<hint text>"
+model: opus|sonnet|haiku
+context:
+  - "!cat RLM/progress/pipeline-state.json"
+  - "!cat RLM/progress/.current-context.md"
+  - "RLM/specs/constitution.md"
+skills:
+  - tdd-workflow
+  - spec-writing
 ---
 
 # Command Title
@@ -53,11 +61,15 @@ Use `/other-command` to reference other commands.
 **Frontmatter fields:**
 - `description` — Quoted string, one line
 - `argument-hint` — Optional. Shows placeholder text to the user (e.g., `<FTR-XXX or TASK-XXX>`)
+- `model` — Which Claude model to use: `opus` (deep reasoning), `sonnet` (balanced), `haiku` (fast)
+- `context` — Files/commands to auto-load at invocation; `!` prefix = dynamic injection (run command, inject output)
+- `skills` — Pre-load these skills into the command's context
 
 **Notes:**
 - No `name` field — the filename is the command name
 - No `tools` field — Claude Code commands have implicit access to all tools
 - User input is injected via `$ARGUMENTS`
+- Dynamic injection uses `!cat` (works in Git Bash on Windows and native shell on Unix)
 
 ### 1c. Gemini CLI Agent (`.gemini/agents/<name>.md`)
 
@@ -229,8 +241,13 @@ tools: ['read', 'search']
 ---
 description: "Pre-load feature or task context into the conversation (RLM Method v2.7)"
 argument-hint: "<FTR-XXX or TASK-XXX>"
+model: sonnet
+context:
+  - "!cat RLM/progress/.current-context.md"
 ---
 ```
+- `model: sonnet` — balanced speed/quality for context loading
+- `context:` with dynamic injection of current pipeline state
 - No tools field (implicit access)
 - Arguments via: `$ARGUMENTS`
 - Delegates with: `/rlm-implement`, `/rlm-quality`, `/rlm-verify`
@@ -344,5 +361,121 @@ Target: {{args}}
 | **Gemini hook events** | `BeforeTool`/`AfterTool` (not `PreToolUse`/`PostToolUse`) |
 | **Gemini hook blocking** | stdout JSON with exit code 2 (not stderr) |
 | **Gemini env var** | `$env:GEMINI_PROJECT_DIR` (not `$env:CLAUDE_PROJECT_DIR`) |
-| **Claude Code no agent tool** | Claude Code cannot delegate to sub-agents; use inline workflow or instruct user to run `/command` |
+| **Claude Code sub-agents (v2)** | Frontmatter supports `model`, `disallowedTools`, `maxTurns`, `context` (with `!` injection), `skills`, `hooks` (PreToolUse, PostToolUse, Stop) |
+| **Claude Code agent teams** | Set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and `teammateMode: auto` in settings |
+| **Claude Code skills (v2)** | Skills support `model`, `context: fork`, `allowed-tools`, dynamic `!`backtick in body, prompt hooks with `model: haiku` |
+| **Claude Code hooks (v2)** | 14 hook events with structured JSON output; 3 handler types: `command`, `prompt`, `agent` |
+| **Claude Code commands (v2)** | Frontmatter supports `model`, `context` (with `!cat` dynamic injection), `skills` pre-loading |
+| **Copilot/Gemini constraints** | Copilot CLI and Gemini CLI don't support `model`/`disallowedTools`/`maxTurns` in frontmatter — use body-text `## Constraints (v2)` sections instead |
 | **Copilot agent tool** | Copilot agents can delegate with `agent` tool to other agents |
+
+---
+
+## 9. Skills Cross-Reference
+
+Skills provide on-demand knowledge and hooks. Each platform has its own skills directory:
+
+| Skill | Copilot CLI | Claude Code | Gemini CLI |
+|-------|------------|-------------|------------|
+| rlm-pipeline | `.github/skills/rlm-pipeline/` | `.claude/skills/rlm-pipeline/` | `.gemini/skills/rlm-pipeline/` |
+| spec-writing | `.github/skills/spec-writing/` | `.claude/skills/spec-writing/` | `.gemini/skills/spec-writing/` |
+| tdd-workflow | `.github/skills/tdd-workflow/` | `.claude/skills/tdd-workflow/` | `.gemini/skills/tdd-workflow/` |
+| sandbox | `.github/skills/sandbox/` | `.claude/skills/sandbox/` | `.gemini/skills/sandbox/` |
+| fork-terminal | N/A | `.claude/skills/fork-terminal/` | N/A |
+| observability | N/A | `.claude/skills/observability/` | N/A |
+
+### Claude Code Skill Features (v2)
+
+Claude Code skills support frontmatter hooks, model selection, tool restrictions, and dynamic context:
+
+```yaml
+---
+name: spec-writing
+description: "Feature spec and PRD writing with validation hooks"
+user-invocable: true
+model: sonnet
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Grep
+  - Glob
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: prompt
+          prompt: "Validate spec follows FTR-XXX naming and has required sections."
+          model: haiku
+          timeout: 10
+---
+
+## Current Context
+!`cat RLM/progress/.current-context.md 2>/dev/null || echo "No active context"`
+```
+
+- **Hook types**: `command` (shell script), `prompt` (AI model check with haiku for fast validation), `agent` (delegate to sub-agent)
+- **Dynamic injection**: Use `!`backtick in the skill body to inject live state at invocation time
+- **`context: fork`**: Isolate skill context to save tokens (used by observability, fork-terminal)
+- **`allowed-tools`**: Restrict which tools the skill can use (e.g., observability is read-only)
+
+---
+
+## 10. Specialist Sub-Agents
+
+These sub-agents are used by the team lead for focused, single-responsibility work:
+
+| Role | Copilot CLI | Claude Code | Gemini CLI |
+|------|------------|-------------|------------|
+| Team Lead | N/A (orchestrator handles) | `@team-lead` | N/A (orchestrator handles) |
+| Code Writer | `@code-writer-agent` | `@code-writer` | `@rlm-code-writer` |
+| Test Writer | `@test-writer-agent` | `@test-writer` | `@rlm-test-writer` |
+| Reviewer | `@reviewer-agent` | `@reviewer` | `@rlm-reviewer` |
+| Tester | `@tester-agent` | `@tester` | `@rlm-tester` |
+
+### Sub-Agent Hardening (v2)
+
+Claude Code sub-agents use frontmatter fields for constraint enforcement. Copilot CLI and Gemini CLI use body-text `## Constraints (v2)` sections.
+
+**Claude Code agent frontmatter (v2):**
+```yaml
+---
+name: "Agent Name"
+description: "Description"
+model: sonnet
+tools:
+  - Read
+  - Write
+disallowedTools:
+  - Bash
+maxTurns: 50
+context:
+  - "!cat RLM/progress/.current-context.md"
+  - "RLM/specs/constitution.md"
+skills:
+  - tdd-workflow
+hooks:
+  PreToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: prompt
+          prompt: "Validate this write is within scope."
+          model: haiku
+  Stop:
+    - hooks:
+        - type: prompt
+          prompt: "Verify all tasks completed before stopping."
+---
+```
+
+### Sub-Agent Hook Enforcement
+
+| Sub-Agent | Hook Type | Effect |
+|-----------|-----------|--------|
+| `code-writer` | PreToolUse prompt (haiku) | Blocks writes to test files (*.test.ts, *.spec.ts) |
+| `code-writer` | PostToolUse command | Validates source code quality (no `any`, function length) |
+| `test-writer` | PreToolUse prompt (haiku) | Blocks writes to implementation files |
+| `reviewer` | Stop prompt | Blocks stop without generating review report |
+| `tester` | PostToolUse (Bash) | Captures test execution results + metrics to logs |
+| `gemini-analyzer` | PreToolUse command | Verifies gemini CLI is installed |
+| All agents | Stop prompt | Verify assigned tasks are completed before stopping |

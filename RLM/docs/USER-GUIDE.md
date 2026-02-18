@@ -4,13 +4,13 @@
 
 ## Introduction
 
-RLM (Research, Lead, Manage) is an AI-powered software development methodology that transforms ideas into production-ready code. It works with **GitHub Copilot CLI**.
+RLM (Research, Lead, Manage) is an AI-powered software development methodology that transforms ideas into production-ready code. It works with **GitHub Copilot CLI**, **Claude Code**, and **Gemini CLI**.
 
 ### Key Features
 
 - **Structured Discovery**: Transforms ideas into comprehensive requirements through guided questions
 - **9-Phase Pipeline**: Complete automation from idea to verified code
-- **Copilot CLI Integration**: Works seamlessly with GitHub Copilot CLI
+- **Multi-Platform**: Works with Copilot CLI (`@rlm-*`), Claude Code (`/rlm-*`), and Gemini CLI (`/rlm-*`)
 - **TDD by Default**: All implementation follows Test-Driven Development
 - **Design System Integration**: Full UI/UX engineering with design tokens and accessibility
 - **Behavioral Economics**: Research-backed product design principles
@@ -39,15 +39,20 @@ Ensure you have the `RLM/` folder in your project with:
 - `RLM/progress/` - Progress tracking
 
 ### Step 2: Start Discovery
-Tell your AI:
+Tell your AI to run discovery using the appropriate platform command:
 ```
+# Copilot CLI
+@rlm-discover [Your project idea]
+
+# Claude Code
+/rlm-discover [Your project idea]
+
+# Gemini CLI
+/rlm-discover [Your project idea]
+
+# Or any AI — read the prompt directly:
 Read RLM/prompts/01-DISCOVER.md and help me discover specs for:
 [Your project idea here]
-```
-
-Or in Copilot CLI:
-```
-@rlm-discover [Your project idea]
 ```
 
 ### Step 3: Answer Questions
@@ -55,9 +60,9 @@ The AI will ask ~12-18 questions in 3-4 rounds, including design preferences for
 
 ### Step 4: Review & Implement
 - Review generated PRD at `RLM/specs/PRD.md`
-- Generate specs: `@rlm-specs` or read `02-CREATE-SPECS.md`
-- Create tasks: `@rlm-tasks` or read `03-CREATE-TASKS.md`
-- Implement: `@rlm-implement all` or read `05-IMPLEMENT-ALL.md`
+- Generate specs: `@rlm-specs` (Copilot) / `/rlm-specs` (Claude/Gemini)
+- Create tasks: `@rlm-tasks` (Copilot) / `/rlm-tasks` (Claude/Gemini)
+- Implement: `@rlm-implement` (Copilot) / `/rlm-implement` (Claude/Gemini)
 
 > **Automatic Documentation**: All `@rlm-*` agents automatically fetch up-to-date documentation using WebSearch/WebFetch. Cached to `RLM/research/docs/` with 30-day TTL.
 

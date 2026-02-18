@@ -1,6 +1,12 @@
 ---
 description: "Full 9-phase RLM pipeline orchestration — idea to verified code (RLM Method v2.7)"
 argument-hint: "<project idea or --from-prd or --from-specs or resume>"
+model: opus
+context:
+  - "!cat RLM/progress/pipeline-state.json"
+  - "!cat RLM/progress/.current-context.md"
+skills:
+  - rlm-pipeline
 ---
 
 # RLM Orchestrator — Full Pipeline

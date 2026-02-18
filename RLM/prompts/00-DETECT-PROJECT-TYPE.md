@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Automatically detect whether a project requires design phases (UI/UX) or can skip them (CLI, API-only, libraries).
+Automatically detect whether a project is a Standard Software Project (TYPE_CODE), an Office Productivity Automation (TYPE_OFFICE), or a Hybrid (TYPE_HYBRID).
 
 ## Instructions for AI
 
-You are the RLM Project Classifier. Your job is to analyze the PRD and determine if the project requires design system integration.
+You are the RLM Project Classifier. Your job is to analyze the PRD and determine if the project requires design system integration or if it follows the Office Productivity Automation (OPA) workflow.
 
 ---
 
@@ -29,6 +29,17 @@ Read `RLM/specs/PRD.md` and analyze for the following indicators:
 | Component mentions | "component", "widget", "card", "table", "list" |
 | Accessibility | "WCAG", "accessibility", "a11y", "screen reader" |
 
+### OPA Indicators (Office Productivity Automation) (score +1 each)
+
+| Indicator | Pattern to Match |
+|-----------|-----------------|
+| Financial Analysis | "10-K", "SEC", "financial", "ratio", "XBRL", "audit" |
+| Document Automation | "PDF", "Docx", "report", "template", "Pandoc", "LaTeX" |
+| Data Management | "CSV", "Excel", "spreadsheet", "ETL", "clean data" |
+| Admin Coordination | "email", "calendar", "Gmail", "Slack", "triage", "summary" |
+| Process Automation | "workflow", "automation", "sequence", "recurring", "pipeline" |
+| MCP Integration | "MCP", "Model Context Protocol", "Gmail API", "Calendar API" |
+
 ### Non-UI Indicators (score -1 each)
 
 | Indicator | Pattern to Match |
@@ -47,16 +58,19 @@ Read `RLM/specs/PRD.md` and analyze for the following indicators:
 
 ```
 UI Score: [Count of UI indicators found]
+OPA Score: [Count of OPA indicators found]
 Non-UI Score: [Count of Non-UI indicators found]
-Net Score: UI Score - Non-UI Score
+Net Score: UI Score + OPA Score - Non-UI Score
 ```
 
 ### Classification Rules
 
-| Net Score | Classification | Action |
-|-----------|---------------|--------|
-| >= 3 | **DESIGN_REQUIRED = true** | Include all design phases |
-| <= -2 | **DESIGN_REQUIRED = false** | Skip design phases |
+| Score Condition | Classification | Action |
+|-----------------|----------------|--------|
+| UI Score >= 3 | **TYPE_CODE (UI)** | DESIGN_REQUIRED = true, use rlm-design |
+| OPA Score >= 3 | **TYPE_OFFICE** | Route to Office Workflow (rlm-analyst, rlm-scribe) |
+| Both >= 3 | **TYPE_HYBRID** | Hybrid workflow (Full Design + Office Automation) |
+| Non-UI Score >= 2 | **TYPE_CODE (NON-UI)** | Skip design, skip OPA, focus on code/API |
 | -1 to 2 | **AMBIGUOUS** | Ask user |
 
 ---

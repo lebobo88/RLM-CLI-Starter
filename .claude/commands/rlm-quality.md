@@ -1,5 +1,11 @@
 ---
 description: "Phase 7: Code review, testing, and design QA quality gates (RLM Method v2.7)"
+model: sonnet
+context:
+  - "!ls RLM/tasks/completed"
+  - "!cat RLM/progress/status.json"
+skills:
+  - tdd-workflow
 ---
 
 # RLM Quality — Phase 7: Quality Gates
